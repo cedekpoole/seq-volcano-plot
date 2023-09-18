@@ -87,7 +87,7 @@ function Chart() {
           value: 0.1,
           color: "grey",
           dashStyle: "shortdash",
-          width: 2,
+          width: 1.5,
         },
       ],
       startOnTick: false,
@@ -128,7 +128,7 @@ function Chart() {
           name="file"
           accept=".csv"
           onChange={changeHandler}
-          style={{ display: "block", margin: "10px auto" }}
+          style={{ display: "block", margin: "20px auto" }}
         />
       </div>
       {showChart && (
