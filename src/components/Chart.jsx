@@ -17,24 +17,40 @@ function Chart() {
     setSignificant([]);
     setNotSignificant([]);
     setShowChart(false);
+
     Papa.parse(event.target.files[0], {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
       complete: function (results) {
         results.data.forEach((row) => {
-            if (row.padj < 0.05 && row.log2FoldChange > 1 || row.log2FoldChange < -1) {
-                setSignificant((prev) => [...prev, {x: row.log2FoldChange, y: -Math.log10(row.padj), gene: Object.values(row)[0]}]);
-            } else if (!isNaN(row.padj)) {
-                setNotSignificant((prev) => [...prev, {x: row.log2FoldChange, y: -Math.log10(row.padj), gene: Object.values(row)[0]}]);
-            }
-        })
+          if (
+            (row.padj < 0.05 && row.log2FoldChange > 1) ||
+            row.log2FoldChange < -1
+          ) {
+            setSignificant((prev) => [
+              ...prev,
+              {
+                x: row.log2FoldChange,
+                y: -Math.log10(row.padj),
+                gene: Object.values(row)[0],
+              },
+            ]);
+          } else if (!isNaN(row.padj)) {
+            setNotSignificant((prev) => [
+              ...prev,
+              {
+                x: row.log2FoldChange,
+                y: -Math.log10(row.padj),
+                gene: Object.values(row)[0],
+              },
+            ]);
+          }
+        });
         setShowChart(true);
       },
     });
   };
-
-  
 
   const options = {
     chart: {
@@ -47,59 +63,59 @@ function Chart() {
       title: {
         text: "log2 Fold Change",
       },
-      plotLines: [{
-        value: -1,
-        color: "grey",
-        dashStyle: "shortdash",
-        width: 1,
-      },
-      {
-        value: 1,
-        color: "grey",
-        dashStyle: "shortdash",
-        width: 1,
-      }]
+      plotLines: [
+        {
+          value: -1,
+          color: "grey",
+          dashStyle: "shortdash",
+          width: 1,
+        },
+        {
+          value: 1,
+          color: "grey",
+          dashStyle: "shortdash",
+          width: 1,
+        },
+      ],
     },
     yAxis: {
       lineWidth: 1,
       title: {
         text: "-log10(padj)",
       },
-    //   plotLines: [{
-    //     value: 0.05,
-    //     color: 'grey',
-    //     dashStyle: 'shortdash',
-    //     width: 2,
-    //   }],
+      //   plotLines: [{
+      //     value: 0.05,
+      //     color: 'grey',
+      //     dashStyle: 'shortdash',
+      //     width: 2,
+      //   }],
     },
     plotOptions: {
-        series: {
-            turboThreshold: 500000,
-            marker: {
-                symbol: "circle",
-                radius: 2
-            }
-        }
+      series: {
+        turboThreshold: 500000,
+        marker: {
+          symbol: "circle",
+          radius: 2,
+        },
+      },
     },
     series: [
-        {
-            name: "Significant Genes",
-            color: "rgb(133,31,76)",
-            data: significant,
-        },
-        {
-            name: "Not Significant",
-            color: "rgb(150,156,159)",
-            data: notSignificant,
-        },
-      ],
-      tooltip: {
-        formatter: function() {
-          return this.point.gene;
-        }
-      }
-      
-    
+      {
+        name: "Significant Genes",
+        color: "rgb(133,31,76)",
+        data: significant,
+      },
+      {
+        name: "Not Significant",
+        color: "rgb(150,156,159)",
+        data: notSignificant,
+      },
+    ],
+    tooltip: {
+      formatter: function () {
+        return this.point.gene;
+      },
+    },
   };
 
   return (
@@ -113,12 +129,14 @@ function Chart() {
           style={{ display: "block", margin: "10px auto" }}
         />
       </div>
-        {showChart && (
-            <div className="container" style={{width: 500, height: 300, margin: "50px auto"}}>
-            <HighChartsReact highcharts={HighCharts} options={options} />
-            </div>
-            
-        )}
+      {showChart && (
+        <div
+          className="container"
+          style={{ width: 500, height: 300, margin: "50px auto" }}
+        >
+          <HighChartsReact highcharts={HighCharts} options={options} />
+        </div>
+      )}
     </div>
   );
 }
