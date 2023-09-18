@@ -14,13 +14,16 @@ function Chart() {
   const [notSignificant, setNotSignificant] = useState([]);
 
   const changeHandler = (event) => {
+    setSignificant([]);
+    setNotSignificant([]);
+    setShowChart(false);
     Papa.parse(event.target.files[0], {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
       complete: function (results) {
         results.data.forEach((row) => {
-            if (row.padj < 0.05) {
+            if (row.padj < 0.05 && row.log2FoldChange > 1 || row.log2FoldChange < -1) {
                 setSignificant((prev) => [...prev, {x: row.log2FoldChange, y: -Math.log10(row.padj), gene: Object.values(row)[0]}]);
             } else if (!isNaN(row.padj)) {
                 setNotSignificant((prev) => [...prev, {x: row.log2FoldChange, y: -Math.log10(row.padj), gene: Object.values(row)[0]}]);
@@ -30,6 +33,8 @@ function Chart() {
       },
     });
   };
+
+  
 
   const options = {
     chart: {
@@ -42,13 +47,30 @@ function Chart() {
       title: {
         text: "log2 Fold Change",
       },
+      plotLines: [{
+        value: -1,
+        color: "grey",
+        dashStyle: "shortdash",
+        width: 1,
+      },
+      {
+        value: 1,
+        color: "grey",
+        dashStyle: "shortdash",
+        width: 1,
+      }]
     },
     yAxis: {
       lineWidth: 1,
       title: {
         text: "-log10(padj)",
       },
-      minPadding: 0.1,
+    //   plotLines: [{
+    //     value: 0.05,
+    //     color: 'grey',
+    //     dashStyle: 'shortdash',
+    //     width: 2,
+    //   }],
     },
     plotOptions: {
         series: {
