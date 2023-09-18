@@ -1,30 +1,11 @@
-import Papa from 'papaparse';
+import Input from "./components/Input";
+import Chart from "./components/Chart";
 
 function App() {
-
-  const changeHandler = (event) => {
-    Papa.parse(event.target.files[0], {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: true,
-      step: function(row) {
-        console.log(row.data);
-      },
-      complete: function(results) {
-        console.log(results);
-      }
-    });
-  }
-
   return (
-    <div className="app">
-      <input 
-        type="file" 
-        name="file" 
-        accept=".csv"
-        onChange={changeHandler}
-        style={{display: "block", margin: "10px auto"}}
-      />
+    <div>
+      <Input />
+      <Chart />
     </div>
   );
 }
