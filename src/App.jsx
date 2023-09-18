@@ -1,8 +1,19 @@
+import Papa from 'papaparse';
 
 function App() {
 
   const changeHandler = (event) => {
-    console.log(event.target.files[0]);
+    Papa.parse(event.target.files[0], {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      step: function(row) {
+        console.log(row.data);
+      },
+      complete: function(results) {
+        console.log(results);
+      }
+    });
   }
 
   return (
