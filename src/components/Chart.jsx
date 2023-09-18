@@ -118,6 +118,14 @@ function Chart() {
         return this.point.gene;
       },
     },
+    legend: {
+        labelFormatter: function () {
+          // Append the count of data points in each series to the legend label
+          const series = this;
+          const numPoints = series.data.length;
+          return series.name + ` (${numPoints})`;
+        },
+      },
   };
 
   return (
