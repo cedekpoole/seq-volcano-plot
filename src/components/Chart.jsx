@@ -58,7 +58,7 @@ function Chart() {
     xAxis: {
       zIndex: 10,
       title: {
-        text: "log2 Fold Change",
+        text: "log2FoldChange",
       },
       plotLines: [
         {
