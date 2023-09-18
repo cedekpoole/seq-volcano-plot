@@ -14,10 +14,6 @@ function Chart() {
   const [notSignificant, setNotSignificant] = useState([]);
 
   const changeHandler = (event) => {
-    setSignificant([]);
-    setNotSignificant([]);
-    setShowChart(false);
-
     Papa.parse(event.target.files[0], {
       header: true,
       skipEmptyLines: true,
@@ -25,7 +21,7 @@ function Chart() {
       complete: function (results) {
         results.data.forEach((row) => {
           if (
-            (row.padj < 0.05 && row.log2FoldChange > 1) ||
+            (row.padj < 0.1 && row.log2FoldChange > 1) ||
             row.log2FoldChange < -1
           ) {
             setSignificant((prev) => [
@@ -60,6 +56,7 @@ function Chart() {
       text: "Volcano Plot",
     },
     xAxis: {
+      zIndex: 10,
       title: {
         text: "log2 Fold Change",
       },
@@ -79,16 +76,21 @@ function Chart() {
       ],
     },
     yAxis: {
+      tickInterval: 25,
       lineWidth: 1,
       title: {
         text: "-log10(padj)",
       },
-      //   plotLines: [{
-      //     value: 0.05,
-      //     color: 'grey',
-      //     dashStyle: 'shortdash',
-      //     width: 2,
-      //   }],
+      min: -10,
+      plotLines: [
+        {
+          value: 0.1,
+          color: "grey",
+          dashStyle: "shortdash",
+          width: 2,
+        },
+      ],
+      startOnTick: false,
     },
     plotOptions: {
       series: {
@@ -106,7 +108,7 @@ function Chart() {
         data: significant,
       },
       {
-        name: "Not Significant",
+        name: "No Change",
         color: "rgb(150,156,159)",
         data: notSignificant,
       },
