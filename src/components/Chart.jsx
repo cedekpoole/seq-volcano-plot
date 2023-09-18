@@ -10,8 +10,12 @@ HC_exporting(HighCharts);
 
 function Chart() {
   const [showChart, setShowChart] = useState(false);
-  const [significant, setSignificant] = useState([]);
-  const [notSignificant, setNotSignificant] = useState([]);
+  const [significantData, setSignificantData] = useState([]);
+  const [notSignificantData, setNotSignificantData] = useState([]);
+
+  // count number of data plots for each series
+  const [changeCount, setChangeCount] = useState(0);
+  const [noChangeCount, setNoChangeCount] = useState(0);
 
   const changeHandler = (event) => {
     Papa.parse(event.target.files[0], {
@@ -24,7 +28,7 @@ function Chart() {
             (row.padj < 0.1 && row.log2FoldChange > 1) ||
             row.log2FoldChange < -1
           ) {
-            setSignificant((prev) => [
+            setSignificantData((prev) => [
               ...prev,
               {
                 x: row.log2FoldChange,
@@ -32,8 +36,9 @@ function Chart() {
                 gene: Object.values(row)[0],
               },
             ]);
+            setChangeCount((prev) => prev + 1);
           } else if (!isNaN(row.padj)) {
-            setNotSignificant((prev) => [
+            setNotSignificantData((prev) => [
               ...prev,
               {
                 x: row.log2FoldChange,
@@ -41,6 +46,7 @@ function Chart() {
                 gene: Object.values(row)[0],
               },
             ]);
+            setNoChangeCount((prev) => prev + 1);
           }
         });
         setShowChart(true);
@@ -105,12 +111,12 @@ function Chart() {
       {
         name: "Significant Genes",
         color: "rgb(133,31,76)",
-        data: significant,
+        data: significantData,
       },
       {
         name: "No Change",
         color: "rgb(150,156,159)",
-        data: notSignificant,
+        data: notSignificantData,
       },
     ],
     tooltip: {
@@ -119,13 +125,13 @@ function Chart() {
       },
     },
     legend: {
-        labelFormatter: function () {
-          // Append the count of data points in each series to the legend label
-          const series = this;
-          const numPoints = series.data.length;
-          return series.name + ` (${numPoints})`;
-        },
+      labelFormatter: function () {
+        const series = this;
+        const numPoints =
+          series.name === "Significant Genes" ? changeCount : noChangeCount;
+        return `${series.name} (${numPoints})`;
       },
+    },
   };
 
   return (
