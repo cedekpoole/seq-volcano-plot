@@ -99,7 +99,7 @@ function Chart() {
           value: 0.1,
           color: "grey",
           dashStyle: "shortdash",
-          width: 1.5,
+          width: 2,
         },
       ],
       startOnTick: false,
