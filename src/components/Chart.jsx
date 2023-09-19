@@ -5,6 +5,7 @@ import highchartsAccessibility from "highcharts/modules/accessibility";
 import { useState } from "react";
 import Papa from "papaparse";
 
+// add the exporting and accessibility modules
 highchartsAccessibility(HighCharts);
 HC_exporting(HighCharts);
 
@@ -18,10 +19,13 @@ function Chart() {
   const [noChangeCount, setNoChangeCount] = useState(0);
 
   const changeHandler = (event) => {
+    // use the papa parse package to parse the csv file
     Papa.parse(event.target.files[0], {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
+      // once the file is parsed, loop through each row
+      // and add the data to the appropriate series
       complete: function (results) {
         results.data.forEach((row) => {
           if (
@@ -36,6 +40,7 @@ function Chart() {
                 gene: Object.values(row)[0],
               },
             ]);
+            // increment the count for the series
             setChangeCount((prev) => prev + 1);
           } else if (!isNaN(row.padj)) {
             setNotSignificantData((prev) => [
@@ -49,11 +54,12 @@ function Chart() {
             setNoChangeCount((prev) => prev + 1);
           }
         });
+        // set the state to show the chart
         setShowChart(true);
       },
     });
   };
-
+  // set the options for the chart
   const options = {
     chart: {
       type: "scatter",
@@ -100,6 +106,8 @@ function Chart() {
     },
     plotOptions: {
       series: {
+        // increase the turboThreshold to 
+        // allow for more data points
         turboThreshold: 500000,
         marker: {
           symbol: "circle",
@@ -124,6 +132,8 @@ function Chart() {
         return this.point.gene;
       },
     },
+    // add a custom legend to show the number of 
+    // data points for each series
     legend: {
       labelFormatter: function () {
         const series = this;
@@ -136,7 +146,8 @@ function Chart() {
 
   return (
     <div>
-      <div className="app">
+      {/* add a file input to allow the user to upload a csv file */}
+      <div className="file-input">
         <input
           type="file"
           name="file"
@@ -147,7 +158,7 @@ function Chart() {
       </div>
       {showChart && (
         <div
-          className="container"
+          className="chart"
           style={{ width: 500, height: 300, margin: "50px auto" }}
         >
           <HighChartsReact highcharts={HighCharts} options={options} />
