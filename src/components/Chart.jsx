@@ -29,8 +29,8 @@ function Chart() {
       complete: function (results) {
         results.data.forEach((row) => {
           if (
-            (row.padj < 0.1 && row.log2FoldChange > 1) ||
-            row.log2FoldChange < -1
+            (row.padj < 0.1 && (row.log2FoldChange > 1 ||
+            row.log2FoldChange < -1))
           ) {
             setSignificantData((prev) => [
               ...prev,
@@ -59,6 +59,7 @@ function Chart() {
       },
     });
   };
+
   // set the options for the chart
   const options = {
     chart: {
