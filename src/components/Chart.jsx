@@ -29,8 +29,8 @@ function Chart() {
       complete: function (results) {
         results.data.forEach((row) => {
           if (
-            (row.padj < 0.1 && (row.log2FoldChange > 1 ||
-            row.log2FoldChange < -1))
+            row.padj < 0.1 &&
+            (row.log2FoldChange > 1 || row.log2FoldChange < -1)
           ) {
             setSignificantData((prev) => [
               ...prev,
@@ -64,6 +64,7 @@ function Chart() {
   const options = {
     chart: {
       type: "scatter",
+      zoomType: "xy",
     },
     title: {
       text: "Volcano Plot",
@@ -107,7 +108,7 @@ function Chart() {
     },
     plotOptions: {
       series: {
-        // increase the turboThreshold to 
+        // increase the turboThreshold to
         // allow for more data points
         turboThreshold: 500000,
         marker: {
@@ -133,7 +134,7 @@ function Chart() {
         return this.point.gene;
       },
     },
-    // add a custom legend to show the number of 
+    // add a custom legend to show the number of
     // data points for each series
     legend: {
       labelFormatter: function () {
