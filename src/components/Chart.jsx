@@ -69,6 +69,9 @@ function Chart() {
     title: {
       text: "Volcano Plot",
     },
+    subtitle: {
+        text: "Click and drag within the plot area to zoom in"
+    },
     xAxis: {
       zIndex: 10,
       title: {
@@ -101,7 +104,7 @@ function Chart() {
           value: 0.1,
           color: "grey",
           dashStyle: "shortdash",
-          width: 2,
+          width: 1.5,
         },
       ],
       startOnTick: false,
@@ -155,7 +158,7 @@ function Chart() {
           name="file"
           accept=".csv"
           onChange={changeHandler}
-          style={{ display: "block", margin: "20px auto" }}
+          style={{ display: "block", margin: "20px auto", fontSize: "20px" }}
         />
       </div>
       {showChart && (
