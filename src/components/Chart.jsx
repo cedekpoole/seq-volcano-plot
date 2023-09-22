@@ -104,7 +104,7 @@ function Chart() {
           value: 1,
           color: "grey",
           dashStyle: "shortdash",
-          width: 1.5,
+          width: 1,
         },
       ],
       startOnTick: false,
