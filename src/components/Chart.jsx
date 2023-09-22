@@ -136,7 +136,7 @@ function Chart() {
       formatter: function () {
         return `${
           this.point.gene
-        } <br> <b>log2FoldChange:</b> ${this.point.x.toFixed(2)
+        } <br> <b>log2FC:</b> ${this.point.x.toFixed(2)
         } <br> <b>-log10(padj):</b> ${this.point.y.toFixed(2)}`;
       },
     },
