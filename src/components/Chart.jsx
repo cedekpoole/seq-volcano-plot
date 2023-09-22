@@ -70,7 +70,7 @@ function Chart() {
       text: "Volcano Plot",
     },
     subtitle: {
-        text: "Click and drag within the plot area to zoom in"
+      text: "Click and drag within the plot area to zoom in",
     },
     xAxis: {
       zIndex: 10,
@@ -134,7 +134,10 @@ function Chart() {
     ],
     tooltip: {
       formatter: function () {
-        return this.point.gene;
+        return `${
+          this.point.gene
+        } <br> <b>log2FoldChange:</b> ${this.point.x.toFixed(2)
+        } <br> <b>-log10(padj):</b> ${this.point.y.toFixed(2)}`;
       },
     },
     // add a custom legend to show the number of
