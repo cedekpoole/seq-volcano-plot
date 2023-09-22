@@ -101,7 +101,7 @@ function Chart() {
       min: -10,
       plotLines: [
         {
-          value: 0.1,
+          value: 1,
           color: "grey",
           dashStyle: "shortdash",
           width: 1.5,
