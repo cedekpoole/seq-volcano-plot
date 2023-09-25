@@ -6,8 +6,10 @@ import { useState } from "react";
 import Papa from "papaparse";
 
 // add the exporting and accessibility modules
-highchartsAccessibility(HighCharts);
+if (typeof HighCharts === 'object') {
+  highchartsAccessibility(HighCharts);
 HC_exporting(HighCharts);
+} 
 
 function Chart() {
   const [showChart, setShowChart] = useState(false);
@@ -162,12 +164,14 @@ function Chart() {
           accept=".csv"
           onChange={changeHandler}
           style={{ display: "block", margin: "20px auto", fontSize: "20px" }}
+          data-testid="file-input"
         />
       </div>
       {showChart && (
         <div
           className="chart"
           style={{ width: 500, height: 300, margin: "50px auto" }}
+          data-testid="chart"
         >
           <HighChartsReact highcharts={HighCharts} options={options} />
         </div>
