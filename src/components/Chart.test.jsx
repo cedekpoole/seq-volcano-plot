@@ -8,7 +8,7 @@ describe('Chart component', () => {
         const input = screen.getByTestId("file-input");
         expect(input).toBeInTheDocument();
     })
-    it("renders the chart when file is uploaded", async () => {
+    it("renders the chart when file is uploaded", () => {
         render(<Chart />);
         const input = screen.getByTestId("file-input");
         fireEvent.change(input, {
@@ -16,7 +16,7 @@ describe('Chart component', () => {
                 files: [new File([""], "test.csv", { type: "text/csv" })],
             },
         });
-        await waitFor(() => {
+        waitFor(() => {
             const chart = screen.getByTestId("chart");
             expect(chart).toBeInTheDocument();
         })
