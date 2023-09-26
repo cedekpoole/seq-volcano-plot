@@ -6,10 +6,10 @@ import { useState } from "react";
 import Papa from "papaparse";
 
 // add the exporting and accessibility modules
-if (typeof HighCharts === 'object') {
+if (typeof HighCharts === "object") {
   highchartsAccessibility(HighCharts);
-HC_exporting(HighCharts);
-} 
+  HC_exporting(HighCharts);
+}
 
 function Chart() {
   const [showChart, setShowChart] = useState(false);
@@ -20,43 +20,49 @@ function Chart() {
   const [changeCount, setChangeCount] = useState(0);
   const [noChangeCount, setNoChangeCount] = useState(0);
 
+  const handleDataParsing = (data) => {
+    const significantDataTemp = [];
+    const notSignificantDataTemp = [];
+    let changeCountTemp = 0;
+    let noChangeCountTemp = 0;
+    // loop through each row and add
+    // the data to the appropriate series
+    data.forEach((row) => {
+      if (
+        row.padj < 0.1 &&
+        (row.log2FoldChange > 1 || row.log2FoldChange < -1)
+      ) {
+        significantDataTemp.push({
+          x: row.log2FoldChange,
+          y: -Math.log10(row.padj),
+          gene: Object.values(row)[0],
+        });
+        // increment the count for the series
+        changeCountTemp++;
+      } else if (!isNaN(row.padj)) {
+        notSignificantDataTemp.push({
+          x: row.log2FoldChange,
+          y: -Math.log10(row.padj),
+          gene: Object.values(row)[0],
+        });
+        noChangeCountTemp++;
+      }
+    });
+    // set the state
+    setSignificantData(significantDataTemp);
+    setNotSignificantData(notSignificantDataTemp);
+    setChangeCount(changeCountTemp);
+    setNoChangeCount(noChangeCountTemp);
+  };
+
+  // use the papa parse package to parse the csv file
   const changeHandler = (event) => {
-    // use the papa parse package to parse the csv file
     Papa.parse(event.target.files[0], {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
-      // once the file is parsed, loop through each row
-      // and add the data to the appropriate series
       complete: function (results) {
-        results.data.forEach((row) => {
-          if (
-            row.padj < 0.1 &&
-            (row.log2FoldChange > 1 || row.log2FoldChange < -1)
-          ) {
-            setSignificantData((prev) => [
-              ...prev,
-              {
-                x: row.log2FoldChange,
-                y: -Math.log10(row.padj),
-                gene: Object.values(row)[0],
-              },
-            ]);
-            // increment the count for the series
-            setChangeCount((prev) => prev + 1);
-          } else if (!isNaN(row.padj)) {
-            setNotSignificantData((prev) => [
-              ...prev,
-              {
-                x: row.log2FoldChange,
-                y: -Math.log10(row.padj),
-                gene: Object.values(row)[0],
-              },
-            ]);
-            setNoChangeCount((prev) => prev + 1);
-          }
-        });
-        // set the state to show the chart
+        handleDataParsing(results.data);
         setShowChart(true);
       },
     });
@@ -136,10 +142,9 @@ function Chart() {
     ],
     tooltip: {
       formatter: function () {
-        return `${
-          this.point.gene
-        } <br> <b>log2FC:</b> ${this.point.x.toFixed(2)
-        } <br> <b>-log10(padj):</b> ${this.point.y.toFixed(2)}`;
+        return `${this.point.gene} <br> <b>log2FC:</b> ${this.point.x.toFixed(
+          2
+        )} <br> <b>-log10(padj):</b> ${this.point.y.toFixed(2)}`;
       },
     },
     // add a custom legend to show the number of
