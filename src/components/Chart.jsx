@@ -1,5 +1,5 @@
 import HighChartsReact from "highcharts-react-official";
-import HighCharts from "highcharts";
+import HighCharts, { pad } from "highcharts";
 import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
 import { useState, useRef } from "react";
@@ -35,8 +35,9 @@ function Chart() {
     // the data to the appropriate series
     data.forEach((row) => {
       if (
-        row.padj < 0.1 &&
-        (row.log2FoldChange > 1 || row.log2FoldChange < -1)
+        -Math.log10(row.padj) > padjThreshold &&
+        (row.log2FoldChange > higherLog2FCThreshold ||
+          row.log2FoldChange < lowerLog2FCThreshold)
       ) {
         significantDataTemp.push({
           x: row.log2FoldChange,
@@ -94,13 +95,13 @@ function Chart() {
       },
       plotLines: [
         {
-          value: -1,
+          value: lowerLog2FCThreshold,
           color: "grey",
           dashStyle: "shortdash",
           width: 1,
         },
         {
-          value: 1,
+          value: higherLog2FCThreshold,
           color: "grey",
           dashStyle: "shortdash",
           width: 1,
@@ -116,7 +117,7 @@ function Chart() {
       min: -10,
       plotLines: [
         {
-          value: 1,
+          value: padjThreshold,
           color: "grey",
           dashStyle: "shortdash",
           width: 1,
@@ -168,8 +169,7 @@ function Chart() {
 
   return (
     <div>
-      {/* add a file input to allow the user to upload a csv file */}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ textAlign: "center" }}>
         {/* add a file input to allow the user to upload a csv file */}
         <div className="file-input">
           <input
@@ -181,17 +181,27 @@ function Chart() {
             data-testid="file-input"
             required
           />
-          <button type="submit">Submit</button>
         </div>
-        <div className="threshold-sliders">
-          <label>padj Threshold:</label>
+        <div
+          className="threshold-sliders"
+          style={{
+            display: "flex",
+            margin: "40px",
+            fontSize: "20px",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: "20px",
+          }}
+        >
+          <label>-Log10(padj) Threshold:</label>
           <input
             type="range"
             min={0}
-            max={1}
+            max={2}
             step={0.01}
             value={padjThreshold}
             onChange={(e) => setPadjThreshold(e.target.value)}
+            data-testid="padj-threshold"
           />
           <span>{padjThreshold}</span>
           <br />
@@ -203,6 +213,7 @@ function Chart() {
             step={0.1}
             value={lowerLog2FCThreshold}
             onChange={(e) => setLowerLog2FCThreshold(e.target.value)}
+            data-testid="lower-log2FC-threshold"
           />
           <span>{lowerLog2FCThreshold}</span>
           <br />
@@ -214,9 +225,13 @@ function Chart() {
             step={0.1}
             value={higherLog2FCThreshold}
             onChange={(e) => setHigherLog2FCThreshold(e.target.value)}
+            data-testid="higher-log2FC-threshold"
           />
           <span>{higherLog2FCThreshold}</span>
         </div>
+        <button type="submit" data-testid="submit-button">
+          Submit
+        </button>
       </form>
       {showChart && (
         <div
