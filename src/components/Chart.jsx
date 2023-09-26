@@ -2,7 +2,7 @@ import HighChartsReact from "highcharts-react-official";
 import HighCharts from "highcharts";
 import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Papa from "papaparse";
 
 // add the exporting and accessibility modules
@@ -15,10 +15,16 @@ function Chart() {
   const [showChart, setShowChart] = useState(false);
   const [significantData, setSignificantData] = useState([]);
   const [notSignificantData, setNotSignificantData] = useState([]);
+  const fileInputRef = useRef();
 
   // count number of data plots for each series
   const [changeCount, setChangeCount] = useState(0);
   const [noChangeCount, setNoChangeCount] = useState(0);
+
+  // variable thresholding states
+  const [padjThreshold, setPadjThreshold] = useState(0);
+  const [lowerLog2FCThreshold, setLowerLog2FCThreshold] = useState(0);
+  const [higherLog2FCThreshold, setHigherLog2FCThreshold] = useState(0);
 
   const handleDataParsing = (data) => {
     const significantDataTemp = [];
@@ -56,8 +62,9 @@ function Chart() {
   };
 
   // use the papa parse package to parse the csv file
-  const changeHandler = (event) => {
-    Papa.parse(event.target.files[0], {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    Papa.parse(fileInputRef.current.files[0], {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
@@ -162,16 +169,55 @@ function Chart() {
   return (
     <div>
       {/* add a file input to allow the user to upload a csv file */}
-      <div className="file-input">
-        <input
-          type="file"
-          name="file"
-          accept=".csv"
-          onChange={changeHandler}
-          style={{ display: "block", margin: "20px auto", fontSize: "20px" }}
-          data-testid="file-input"
-        />
-      </div>
+      <form onSubmit={handleSubmit}>
+        {/* add a file input to allow the user to upload a csv file */}
+        <div className="file-input">
+          <input
+            type="file"
+            name="file"
+            accept=".csv"
+            ref={fileInputRef}
+            style={{ display: "block", margin: "20px auto", fontSize: "20px" }}
+            data-testid="file-input"
+            required
+          />
+          <button type="submit">Submit</button>
+        </div>
+        <div className="threshold-sliders">
+          <label>padj Threshold:</label>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={padjThreshold}
+            onChange={(e) => setPadjThreshold(e.target.value)}
+          />
+          <span>{padjThreshold}</span>
+          <br />
+          <label>Lower Log2FC Threshold:</label>
+          <input
+            type="range"
+            min={-4}
+            max={0}
+            step={0.1}
+            value={lowerLog2FCThreshold}
+            onChange={(e) => setLowerLog2FCThreshold(e.target.value)}
+          />
+          <span>{lowerLog2FCThreshold}</span>
+          <br />
+          <label>Higher Log2FC Threshold:</label>
+          <input
+            type="range"
+            min={0}
+            max={4}
+            step={0.1}
+            value={higherLog2FCThreshold}
+            onChange={(e) => setHigherLog2FCThreshold(e.target.value)}
+          />
+          <span>{higherLog2FCThreshold}</span>
+        </div>
+      </form>
       {showChart && (
         <div
           className="chart"
