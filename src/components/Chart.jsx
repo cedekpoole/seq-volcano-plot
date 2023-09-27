@@ -27,8 +27,8 @@ function Chart() {
   const [padjThreshold, setPadjThreshold] = useState(0);
   const [log2FCThreshold, setLog2FCThreshold] = useState([0, 0]);
 
+  // State to store the name of the selected file
   const [selectedFileName, setSelectedFileName] = useState("");
-
 
   // State to store plotLine values
   const [plotLines, setPlotLines] = useState({
@@ -37,6 +37,7 @@ function Chart() {
     higherLog2FCThresholdLine: null,
   });
 
+  // function to parse the data from the csv file
   const handleDataParsing = (data) => {
     const significantDataTemp = [];
     const notSignificantDataTemp = [];
@@ -117,8 +118,8 @@ function Chart() {
     <div>
       <form onSubmit={handleSubmit} style={{ textAlign: "center" }}>
         {/* add a file input to allow the user to upload a csv file */}
-        <div className="file-input" style={{marginTop: 20}}>
-        <FileInput
+        <div className="file-input" style={{ marginTop: 20 }}>
+          <FileInput
             text={selectedFileName || "Choose a CSV file..."}
             inputProps={{
               accept: ".csv",
@@ -127,11 +128,7 @@ function Chart() {
             }}
             onInputChange={(e) => {
               const file = e.target.files[0];
-              if (file) {
-                setSelectedFileName(file.name);
-              } else {
-                setSelectedFileName("");
-              }
+              setSelectedFileName(file.name);
             }}
             data-testid="file-input"
           />
@@ -173,7 +170,12 @@ function Chart() {
             ></RangeSlider>
           </div>
         </div>
-        <Button type="submit" text="Load Data" large data-testid="submit-button"/>
+        <Button
+          type="submit"
+          text="Load Data"
+          large
+          data-testid="submit-button"
+        />
       </form>
       {showChart && (
         <ChartRenderer
