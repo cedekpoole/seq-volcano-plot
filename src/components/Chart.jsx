@@ -1,5 +1,4 @@
-import HighChartsReact from "highcharts-react-official";
-import HighCharts, { pad } from "highcharts";
+import HighCharts from "highcharts";
 import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
 import { useState, useRef } from "react";
