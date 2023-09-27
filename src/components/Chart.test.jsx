@@ -27,13 +27,14 @@ describe("Chart component", () => {
         files: [new File([""], "test.csv", { type: "text/csv" })],
       },
     });
+
     // Simulate setting range sliders
-    const slider1 = screen.getByTestId("padj-threshold");
-    const slider2 = screen.getByTestId("lower-log2FC-threshold");
-    const slider3 = screen.getByTestId("higher-log2FC-threshold");
-    fireEvent.change(slider1, { target: { value: 0.5 } });
-    fireEvent.change(slider2, { target: { value: 1 } });
-    fireEvent.change(slider3, { target: { value: 1.5 } });
+    waitFor(() => {
+      const slider1 = screen.getByTestId("padj-threshold");
+      const slider2 = screen.getByTestId("log2FC-threshold");
+      fireEvent.change(slider1, { target: { value: 0.5 } });
+      fireEvent.change(slider2, { target: { value: [-1, 2] } });
+    });
 
     // Simulate pressing the submit button
     const submitButton = screen.getByTestId("submit-button"); // Use a suitable data-testid attribute
