@@ -83,7 +83,7 @@ function ChartRenderer({
   return (
     <div
       className="chart"
-      style={{ width: 500, height: 300, margin: "50px auto" }}
+      style={{ width: 500, height: 300, margin: "30px auto" }}
       data-testid="chart"
     >
       <HighChartsReact highcharts={HighCharts} options={options} />

@@ -1,10 +1,10 @@
-import HighCharts, { pad } from "highcharts";
+import HighCharts from "highcharts";
 import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
 import { useState, useRef } from "react";
 import Papa from "papaparse";
 import ChartRenderer from "./ChartRenderer";
-import { RangeSlider, Slider, H5, FileInput } from "@blueprintjs/core";
+import { RangeSlider, Slider, H5, Button, FileInput } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
 
 // add the exporting and accessibility modules
@@ -26,6 +26,9 @@ function Chart() {
   // variable thresholding states
   const [padjThreshold, setPadjThreshold] = useState(0);
   const [log2FCThreshold, setLog2FCThreshold] = useState([0, 0]);
+
+  const [selectedFileName, setSelectedFileName] = useState("");
+
 
   // State to store plotLine values
   const [plotLines, setPlotLines] = useState({
@@ -114,15 +117,23 @@ function Chart() {
     <div>
       <form onSubmit={handleSubmit} style={{ textAlign: "center" }}>
         {/* add a file input to allow the user to upload a csv file */}
-        <div className="file-input">
-          <input
-            type="file"
-            name="file"
-            accept=".csv"
-            ref={fileInputRef}
-            style={{ display: "block", margin: "20px auto", fontSize: "20px" }}
+        <div className="file-input" style={{marginTop: 20}}>
+        <FileInput
+            text={selectedFileName || "Choose a CSV file..."}
+            inputProps={{
+              accept: ".csv",
+              ref: fileInputRef,
+              required: true,
+            }}
+            onInputChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                setSelectedFileName(file.name);
+              } else {
+                setSelectedFileName("");
+              }
+            }}
             data-testid="file-input"
-            required
           />
         </div>
         <div
@@ -136,7 +147,7 @@ function Chart() {
             gap: "20px",
           }}
         >
-          <div style={{ width: 300, margin: 20 }}>
+          <div style={{ width: 300, margin: "0 30px" }}>
             <H5 style={{ marginBottom: 10 }}>-log10(padj) Threshold</H5>
             <Slider
               min={0}
@@ -149,7 +160,7 @@ function Chart() {
             ></Slider>
           </div>
 
-          <div style={{ width: 300, margin: 20 }}>
+          <div style={{ width: 300, margin: "0 30px" }}>
             <H5 style={{ marginBottom: 10 }}>Log2FC Threshold</H5>
             <RangeSlider
               min={-4}
@@ -162,9 +173,7 @@ function Chart() {
             ></RangeSlider>
           </div>
         </div>
-        <button type="submit" data-testid="submit-button">
-          Submit
-        </button>
+        <Button type="submit" text="Load Data" large data-testid="submit-button"/>
       </form>
       {showChart && (
         <ChartRenderer
