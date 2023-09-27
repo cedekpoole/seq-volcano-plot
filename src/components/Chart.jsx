@@ -1,9 +1,11 @@
-import HighCharts from "highcharts";
+import HighCharts, { pad } from "highcharts";
 import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
 import { useState, useRef } from "react";
 import Papa from "papaparse";
 import ChartRenderer from "./ChartRenderer";
+import { RangeSlider, Slider, H5, FileInput } from "@blueprintjs/core";
+import "@blueprintjs/core/lib/css/blueprint.css";
 
 // add the exporting and accessibility modules
 if (typeof HighCharts === "object") {
@@ -23,8 +25,7 @@ function Chart() {
 
   // variable thresholding states
   const [padjThreshold, setPadjThreshold] = useState(0);
-  const [lowerLog2FCThreshold, setLowerLog2FCThreshold] = useState(0);
-  const [higherLog2FCThreshold, setHigherLog2FCThreshold] = useState(0);
+  const [log2FCThreshold, setLog2FCThreshold] = useState([0, 0]);
 
   // State to store plotLine values
   const [plotLines, setPlotLines] = useState({
@@ -43,8 +44,8 @@ function Chart() {
     data.forEach((row) => {
       if (
         -Math.log10(row.padj) > padjThreshold &&
-        (row.log2FoldChange > higherLog2FCThreshold ||
-          row.log2FoldChange < lowerLog2FCThreshold)
+        (row.log2FoldChange > log2FCThreshold[1] ||
+          row.log2FoldChange < log2FCThreshold[0])
       ) {
         significantDataTemp.push({
           x: row.log2FoldChange,
@@ -79,13 +80,13 @@ function Chart() {
         width: 1,
       },
       lowerLog2FCThresholdLine: {
-        value: lowerLog2FCThreshold,
+        value: log2FCThreshold[0],
         color: "grey",
         dashStyle: "shortdash",
         width: 1,
       },
       higherLog2FCThresholdLine: {
-        value: higherLog2FCThreshold,
+        value: log2FCThreshold[1],
         color: "grey",
         dashStyle: "shortdash",
         width: 1,
@@ -135,47 +136,30 @@ function Chart() {
             gap: "20px",
           }}
         >
-          <div style={{ width: 400 }}>
-            <label>-Log10(padj) Threshold:</label>
-            <br />
-            <input
-              type="range"
+          <div style={{ width: 300, margin: 20 }}>
+            <H5 style={{ marginBottom: 10 }}>-log10(padj) Threshold</H5>
+            <Slider
               min={0}
-              max={2}
-              step={0.01}
+              max={1}
+              stepSize={0.01}
+              labelStepSize={0.25}
+              onChange={(value) => setPadjThreshold(value)}
               value={padjThreshold}
-              onChange={(e) => setPadjThreshold(e.target.value)}
               data-testid="padj-threshold"
-            />
-            <span>{padjThreshold}</span>
+            ></Slider>
           </div>
-          <div style={{ width: 400 }}>
-            <label>Lower Log2FC Threshold:</label>
-            <br />
-            <input
-              type="range"
+
+          <div style={{ width: 300, margin: 20 }}>
+            <H5 style={{ marginBottom: 10 }}>Log2FC Threshold</H5>
+            <RangeSlider
               min={-4}
-              max={0}
-              step={0.1}
-              value={lowerLog2FCThreshold}
-              onChange={(e) => setLowerLog2FCThreshold(e.target.value)}
-              data-testid="lower-log2FC-threshold"
-            />
-            <span>{lowerLog2FCThreshold}</span>
-          </div>
-          <div style={{ width: 400 }}>
-            <label>Higher Log2FC Threshold:</label>
-            <br />
-            <input
-              type="range"
-              min={0}
               max={4}
-              step={0.1}
-              value={higherLog2FCThreshold}
-              onChange={(e) => setHigherLog2FCThreshold(e.target.value)}
-              data-testid="higher-log2FC-threshold"
-            />
-            <span>{higherLog2FCThreshold}</span>
+              stepSize={0.1}
+              labelStepSize={2}
+              onChange={(value) => setLog2FCThreshold(value)}
+              value={log2FCThreshold}
+              data-testid="log2fc-threshold"
+            ></RangeSlider>
           </div>
         </div>
         <button type="submit" data-testid="submit-button">
