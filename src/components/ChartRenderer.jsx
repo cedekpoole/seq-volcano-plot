@@ -1,6 +1,6 @@
 import HighChartsReact from "highcharts-react-official";
 import HighCharts from "highcharts";
-
+import { memo } from "react";
 function ChartRenderer({
   significantData,
   notSignificantData,
@@ -30,7 +30,6 @@ function ChartRenderer({
       ],
     },
     yAxis: {
-      tickInterval: 25,
       lineWidth: 1,
       title: {
         text: "-log10(padj)",
@@ -43,7 +42,7 @@ function ChartRenderer({
       series: {
         // increase the turboThreshold to
         // allow for more data points
-        turboThreshold: 10000,
+        turboThreshold: 100000,
         marker: {
           symbol: "circle",
           radius: 2,
@@ -92,4 +91,4 @@ function ChartRenderer({
   );
 }
 
-export default ChartRenderer;
+export default memo(ChartRenderer);

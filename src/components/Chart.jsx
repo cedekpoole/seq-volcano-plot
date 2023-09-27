@@ -70,7 +70,7 @@ function Chart() {
   };
 
   const updatePlotLines = () => {
-    // Update plotLines based on threshold values
+    // update plotLines based on threshold values
     const newPlotLines = {
       padjThresholdLine: {
         value: padjThreshold,
