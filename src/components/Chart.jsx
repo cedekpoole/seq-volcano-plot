@@ -25,7 +25,7 @@ function Chart() {
 
   // variable thresholding states
   const [padjThreshold, setPadjThreshold] = useState(0);
-  const [log2FCThreshold, setLog2FCThreshold] = useState([0, 0]);
+  const [log2FCThreshold, setLog2FCThreshold] = useState(0);
 
   // State to store the name of the selected file
   const [selectedFileName, setSelectedFileName] = useState("");
@@ -47,9 +47,9 @@ function Chart() {
     // the data to the appropriate series
     data.forEach((row) => {
       if (
-        -Math.log10(row.padj) > padjThreshold &&
-        (row.log2FoldChange > log2FCThreshold[1] ||
-          row.log2FoldChange < log2FCThreshold[0])
+        row.padj < padjThreshold &&
+        (row.log2FoldChange > log2FCThreshold ||
+          row.log2FoldChange < -log2FCThreshold)
       ) {
         significantDataTemp.push({
           x: row.log2FoldChange,
@@ -78,19 +78,19 @@ function Chart() {
     // update plotLines based on threshold values
     const newPlotLines = {
       padjThresholdLine: {
-        value: padjThreshold,
+        value: -Math.log10(padjThreshold),
         color: "grey",
         dashStyle: "shortdash",
         width: 1,
       },
       lowerLog2FCThresholdLine: {
-        value: log2FCThreshold[0],
+        value: -log2FCThreshold,
         color: "grey",
         dashStyle: "shortdash",
         width: 1,
       },
       higherLog2FCThresholdLine: {
-        value: log2FCThreshold[1],
+        value: log2FCThreshold,
         color: "grey",
         dashStyle: "shortdash",
         width: 1,
@@ -144,30 +144,35 @@ function Chart() {
             gap: "20px",
           }}
         >
-          <div style={{ width: 300, margin: "0 30px" }}>
-            <H5 style={{ marginBottom: 10 }}>-log10(padj) Threshold</H5>
+          <div style={{ width: 500, margin: "0 30px" }}>
+            <H5 style={{ marginBottom: 10 }}>padj Threshold</H5>
             <Slider
               min={0}
-              max={1}
+              max={0.08}
               stepSize={0.01}
-              labelStepSize={0.25}
+              labelValues={[0, 0.01, 0.03, 0.05, 0.07, 0.08]}
+              labelRenderer={(value) => {
+                return (
+                  (value === 0.01 || value === 0.05) ? <strong>{value.toFixed(2)}</strong> : value.toFixed(2)
+                )
+              }}
               onChange={(value) => setPadjThreshold(value)}
               value={padjThreshold}
               data-testid="padj-threshold"
             ></Slider>
           </div>
 
-          <div style={{ width: 300, margin: "0 30px" }}>
+          <div style={{ width: 500, margin: "0 30px" }}>
             <H5 style={{ marginBottom: 10 }}>Log2FC Threshold</H5>
-            <RangeSlider
-              min={-4}
+            <Slider
+              min={0}
               max={4}
               stepSize={0.1}
-              labelStepSize={2}
+              labelStepSize={0.5}
               onChange={(value) => setLog2FCThreshold(value)}
               value={log2FCThreshold}
               data-testid="log2fc-threshold"
-            ></RangeSlider>
+            ></Slider>
           </div>
         </div>
         <Button
