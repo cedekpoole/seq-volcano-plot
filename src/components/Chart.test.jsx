@@ -16,7 +16,7 @@ describe("Chart component", () => {
   it("renders the sliders", () => {
     render(<Chart />);
     const sliders = screen.getAllByRole("slider");
-    expect(sliders.length).toBe(3);
+    expect(sliders.length).toBe(2);
   });
   it("should render the chart after uploading a CSV file, setting range sliders, and pressing submit", () => {
     render(<Chart />);
@@ -32,8 +32,8 @@ describe("Chart component", () => {
     waitFor(() => {
       const slider1 = screen.getByTestId("padj-threshold");
       const slider2 = screen.getByTestId("log2FC-threshold");
-      fireEvent.change(slider1, { target: { value: 0.5 } });
-      fireEvent.change(slider2, { target: { value: [-1, 2] } });
+      fireEvent.change(slider1, { target: { value: 0.03 } });
+      fireEvent.change(slider2, { target: { value: 1 } });
     });
 
     // Simulate pressing the submit button
