@@ -4,7 +4,7 @@ import highchartsAccessibility from "highcharts/modules/accessibility";
 import { useState, useRef } from "react";
 import Papa from "papaparse";
 import ChartRenderer from "./ChartRenderer";
-import { RangeSlider, Slider, H5, Button, FileInput } from "@blueprintjs/core";
+import { Slider, H5, Button, FileInput } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
 
 // add the exporting and accessibility modules
