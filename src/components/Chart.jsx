@@ -40,7 +40,7 @@ function Chart() {
   });
 
   useEffect(() => {
-    if (padjThreshold !== 0 || log2FCThreshold !== 0) {
+    if (showChart === true && (padjThreshold !== 0 || log2FCThreshold !== 0)) {
       renderChart();
     }
   }, [padjThreshold, log2FCThreshold]);
