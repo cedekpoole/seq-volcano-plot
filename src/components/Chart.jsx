@@ -105,7 +105,6 @@ function Chart() {
       },
     };
     setPlotLines(newPlotLines);
-    console.log(plotLines);
   };
 
   const handleSubmit = (event) => {
