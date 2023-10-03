@@ -110,7 +110,6 @@ function Chart() {
   const handleSubmit = (event) => {
     event.preventDefault();
     renderChart();
-    setShowChart(true);
   };
   // use the papa parse package to parse the csv file
   const renderChart = () => {
@@ -121,6 +120,7 @@ function Chart() {
       dynamicTyping: true,
       complete: function (results) {
         handleDataParsing(results.data);
+        setShowChart(true)
       },
     });
   };
