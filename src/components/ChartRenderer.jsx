@@ -1,6 +1,5 @@
 import HighChartsReact from "highcharts-react-official";
 import HighCharts from "highcharts";
-import { memo } from "react";
 function ChartRenderer({
   significantData,
   notSignificantData,
@@ -52,21 +51,25 @@ function ChartRenderer({
     series: [
       {
         name: "Significant Genes",
-        color: "rgb(133,31,76)",
+        color: "rgb(60,89,194)",
         data: significantData,
+        boostThreshold: 1,
       },
       {
         name: "No Change",
         color: "rgb(150,156,159)",
         data: notSignificantData,
+        boostThreshold: 1,
       },
     ],
     tooltip: {
       formatter: function () {
-        return `${this.point.gene} <br> <b>log2FC:</b> ${this.point.x.toFixed(
-          2
-        )} <br> <b>-log10(padj):</b> ${this.point.y.toFixed(2)}`;
+        // return `${this.point.gene} <br> <b>log2FC:</b> ${this.point.x.toFixed(
+        //   2
+        // )} <br> <b>-log10(padj):</b> ${this.point.y.toFixed(2)}`;
+        return this.point.gene
       },
+      hideDelay: 200,
     },
     // add a custom legend to show the number of
     // data points for each series
@@ -78,6 +81,9 @@ function ChartRenderer({
         return `${series.name} (${numPoints})`;
       },
     },
+    boost: {
+        pixelRatio: 0
+    }
   };
 
   return (
@@ -91,4 +97,4 @@ function ChartRenderer({
   );
 }
 
-export default memo(ChartRenderer);
+export default ChartRenderer;
