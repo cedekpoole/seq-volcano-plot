@@ -1,16 +1,18 @@
 import HighCharts from "highcharts";
 import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Papa from "papaparse";
 import ChartRenderer from "./ChartRenderer";
 import { Slider, H5, Button, FileInput } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
+import HighChartsBoost from "highcharts/modules/boost";
 
 // add the exporting and accessibility modules
 if (typeof HighCharts === "object") {
   highchartsAccessibility(HighCharts);
   HC_exporting(HighCharts);
+  HighChartsBoost(HighCharts);
 }
 
 function Chart() {
@@ -36,6 +38,12 @@ function Chart() {
     lowerLog2FCThresholdLine: null,
     higherLog2FCThresholdLine: null,
   });
+
+  useEffect(() => {
+    if (padjThreshold !== 0 || log2FCThreshold !== 0) {
+      renderChart();
+    }
+  }, [padjThreshold, log2FCThreshold]);
 
   // function to parse the data from the csv file
   const handleDataParsing = (data) => {
@@ -97,19 +105,23 @@ function Chart() {
       },
     };
     setPlotLines(newPlotLines);
+    console.log(plotLines);
   };
 
-  // use the papa parse package to parse the csv file
   const handleSubmit = (event) => {
     event.preventDefault();
+    renderChart();
+    setShowChart(true);
+  };
+  // use the papa parse package to parse the csv file
+  const renderChart = () => {
+    updatePlotLines();
     Papa.parse(fileInputRef.current.files[0], {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
       complete: function (results) {
         handleDataParsing(results.data);
-        updatePlotLines();
-        setShowChart(true);
       },
     });
   };
@@ -152,13 +164,16 @@ function Chart() {
               stepSize={0.01}
               labelValues={[0, 0.01, 0.03, 0.05, 0.07, 0.08]}
               labelRenderer={(value) => {
-                return (
-                  (value === 0.01 || value === 0.05) ? <strong>{value.toFixed(2)}</strong> : value.toFixed(2)
-                )
+                return value === 0.01 || value === 0.05 ? (
+                  <strong>{value.toFixed(2)}</strong>
+                ) : (
+                  value.toFixed(2)
+                );
               }}
               onChange={(value) => setPadjThreshold(value)}
               value={padjThreshold}
               data-testid="padj-threshold"
+              className="custom-slider"
             ></Slider>
           </div>
 
@@ -172,6 +187,7 @@ function Chart() {
               onChange={(value) => setLog2FCThreshold(value)}
               value={log2FCThreshold}
               data-testid="log2fc-threshold"
+              className="custom-slider"
             ></Slider>
           </div>
         </div>
@@ -194,5 +210,7 @@ function Chart() {
     </div>
   );
 }
+
+console.warn = () => {};
 
 export default Chart;
