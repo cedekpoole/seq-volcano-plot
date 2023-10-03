@@ -51,7 +51,7 @@ function ChartRenderer({
     series: [
       {
         name: "Significant Genes",
-        color: "rgb(133,31,76)",
+        color: "rgb(60,89,194)",
         data: significantData,
         boostThreshold: 1,
       },
