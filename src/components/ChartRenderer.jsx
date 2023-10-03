@@ -69,6 +69,7 @@ function ChartRenderer({
         // )} <br> <b>-log10(padj):</b> ${this.point.y.toFixed(2)}`;
         return this.point.gene
       },
+      hideDelay: 200,
     },
     // add a custom legend to show the number of
     // data points for each series
