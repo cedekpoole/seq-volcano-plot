@@ -1,5 +1,8 @@
 import HighChartsReact from "highcharts-react-official";
 import HighCharts from "highcharts";
+import annotationModule from "highcharts/modules/annotations";
+annotationModule(HighCharts);
+
 function ChartRenderer({
   significantData,
   notSignificantData,
@@ -7,6 +10,12 @@ function ChartRenderer({
   changeCount,
   noChangeCount,
 }) {
+  // Sort the significantData array in descending order of the y value
+  // and take the top 4 highest points for the annotations
+  const topFourDataPoints = [...significantData]
+    .sort((a, b) => b.y - a.y)
+    .slice(0, 4);
+
   const options = {
     chart: {
       type: "scatter",
@@ -62,12 +71,35 @@ function ChartRenderer({
         boostThreshold: 1,
       },
     ],
+    annotations: [
+      {
+        labels: topFourDataPoints.map((point) => ({
+          point: {
+            xAxis: 0,
+            yAxis: 0,
+            x: point.x,
+            y: point.y,
+          },
+          text: point.gene, // Adjust formatting as needed
+        })),
+        labelOptions: {
+          backgroundColor: "rgba(255,255,255,0.5)",
+          borderColor: "black",
+          borderWidth: 0.5,
+          style: {
+            fontSize: "10px",
+          },
+          overflow: "justify",
+          crop: true,
+        },
+      },
+    ],
     tooltip: {
       formatter: function () {
         // return `${this.point.gene} <br> <b>log2FC:</b> ${this.point.x.toFixed(
         //   2
         // )} <br> <b>-log10(padj):</b> ${this.point.y.toFixed(2)}`;
-        return this.point.gene
+        return this.point.gene;
       },
       hideDelay: 200,
     },
@@ -82,8 +114,8 @@ function ChartRenderer({
       },
     },
     boost: {
-        pixelRatio: 0
-    }
+      pixelRatio: 0,
+    },
   };
 
   return (
