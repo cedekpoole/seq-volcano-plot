@@ -1,14 +1,15 @@
+// Importing libraries and modules
 import HighCharts from "highcharts";
 import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
 import HighChartsBoost from "highcharts/modules/boost";
 import { useState, useRef, useEffect } from "react";
-import Papa from "papaparse";
-import ChartRenderer from "./ChartRenderer";
 import { Slider, H5, Button, FileInput } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
+import ChartRenderer from "./ChartRenderer";
+import { parseCSVData } from "./helpers/CSVHandling";
 
-// add the exporting and accessibility modules
+// initialising Highcharts with additional modules 
 if (typeof HighCharts === "object") {
   highchartsAccessibility(HighCharts);
   HC_exporting(HighCharts);
@@ -16,34 +17,30 @@ if (typeof HighCharts === "object") {
 }
 
 function Chart() {
-  const [showChart, setShowChart] = useState(false);
-  const [significantData, setSignificantData] = useState([]);
-  const [notSignificantData, setNotSignificantData] = useState([]);
-  const fileInputRef = useRef();
-
-  // count number of data plots for each series
-  const [changeCount, setChangeCount] = useState(0);
-  const [noChangeCount, setNoChangeCount] = useState(0);
-
-  // variable thresholding states
-  const [padjThreshold, setPadjThreshold] = useState(0);
-  const [log2FCThreshold, setLog2FCThreshold] = useState(0);
-
-  // State to store the name of the selected file
-  const [selectedFileName, setSelectedFileName] = useState("");
-
-  // State to store plotLine values
-  const [plotLines, setPlotLines] = useState({
-    padjThresholdLine: null,
-    lowerLog2FCThresholdLine: null,
-    higherLog2FCThresholdLine: null,
-  });
+    // States for managing chart data and visibility
+    const [showChart, setShowChart] = useState(false);
+    const [significantData, setSignificantData] = useState([]);
+    const [notSignificantData, setNotSignificantData] = useState([]);
+    const [parsedCsvData, setParsedCsvData] = useState([]);
+  
+    // States for managing thresholds and counts
+    const [padjThreshold, setPadjThreshold] = useState(0);
+    const [log2FCThreshold, setLog2FCThreshold] = useState(0);
+    const [changeCount, setChangeCount] = useState(0);
+    const [noChangeCount, setNoChangeCount] = useState(0);
+    const [plotLines, setPlotLines] = useState({
+      padjThresholdLine: null,
+      lowerLog2FCThresholdLine: null,
+      higherLog2FCThresholdLine: null,
+    });
+  
+    const fileInputRef = useRef();
+    const [selectedFileName, setSelectedFileName] = useState("");
 
   useEffect(() => {
-    if (showChart) renderChart();
+    if (showChart) parseData(parsedCsvData);
   }, [padjThreshold, log2FCThreshold]);
 
-  // function to parse the data from the csv file
   const parseData = (data) => {
     const significantDataTemp = [];
     const notSignificantDataTemp = [];
@@ -73,6 +70,7 @@ function Chart() {
     setNotSignificantData(notSignificantDataTemp);
     setChangeCount(changeCountTemp);
     setNoChangeCount(noChangeCountTemp);
+    updatePlotLines();
     setShowChart(true);
   };
 
@@ -103,17 +101,14 @@ function Chart() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    renderChart();
+    parseData(parsedCsvData);
   };
-  // use the papa parse package to parse the csv file
-  const renderChart = () => {
-    updatePlotLines();
-    Papa.parse(fileInputRef.current.files[0], {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: true,
-      complete: (results) => parseData(results.data),
-    });
+
+  const handleFileChange = (e) => {
+    setShowChart(false);
+    const file = e.target.files[0];
+    setSelectedFileName(file.name);
+    parseCSVData(fileInputRef, setParsedCsvData);
   };
 
   return (
@@ -128,10 +123,7 @@ function Chart() {
               ref: fileInputRef,
               required: true,
             }}
-            onInputChange={(e) => {
-              const file = e.target.files[0];
-              setSelectedFileName(file.name);
-            }}
+            onInputChange={handleFileChange}
             data-testid="file-input"
           />
         </div>
