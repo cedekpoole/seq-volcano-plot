@@ -1,12 +1,12 @@
 import HighCharts from "highcharts";
 import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
+import HighChartsBoost from "highcharts/modules/boost";
 import { useState, useRef, useEffect } from "react";
 import Papa from "papaparse";
 import ChartRenderer from "./ChartRenderer";
 import { Slider, H5, Button, FileInput } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
-import HighChartsBoost from "highcharts/modules/boost";
 
 // add the exporting and accessibility modules
 if (typeof HighCharts === "object") {
@@ -40,13 +40,11 @@ function Chart() {
   });
 
   useEffect(() => {
-    if (showChart) {
-      renderChart();
-    }
+    if (showChart) renderChart();
   }, [padjThreshold, log2FCThreshold]);
 
   // function to parse the data from the csv file
-  const handleDataParsing = (data) => {
+  const parseData = (data) => {
     const significantDataTemp = [];
     const notSignificantDataTemp = [];
     let changeCountTemp = 0;
@@ -54,32 +52,28 @@ function Chart() {
     // loop through each row and add
     // the data to the appropriate series
     data.forEach((row) => {
-      if (
+      const isSignificant =
         row.padj < padjThreshold &&
         (row.log2FoldChange > log2FCThreshold ||
-          row.log2FoldChange < -log2FCThreshold)
-      ) {
-        significantDataTemp.push({
-          x: row.log2FoldChange,
-          y: -Math.log10(row.padj),
-          gene: Object.values(row)[0],
-        });
-        // increment the count for the series
+          row.log2FoldChange < -log2FCThreshold);
+      const dataPoint = {
+        x: row.log2FoldChange,
+        y: -Math.log10(row.padj),
+        gene: Object.values(row)[0],
+      };
+      if (isSignificant) {
+        significantDataTemp.push(dataPoint);
         changeCountTemp++;
       } else if (!isNaN(row.padj)) {
-        notSignificantDataTemp.push({
-          x: row.log2FoldChange,
-          y: -Math.log10(row.padj),
-          gene: Object.values(row)[0],
-        });
+        notSignificantDataTemp.push(dataPoint);
         noChangeCountTemp++;
       }
     });
-    // set the state
     setSignificantData(significantDataTemp);
     setNotSignificantData(notSignificantDataTemp);
     setChangeCount(changeCountTemp);
     setNoChangeCount(noChangeCountTemp);
+    setShowChart(true);
   };
 
   const updatePlotLines = () => {
@@ -118,10 +112,7 @@ function Chart() {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
-      complete: function (results) {
-        handleDataParsing(results.data);
-        setShowChart(true)
-      },
+      complete: (results) => parseData(results.data),
     });
   };
 
@@ -144,17 +135,7 @@ function Chart() {
             data-testid="file-input"
           />
         </div>
-        <div
-          className="threshold-sliders"
-          style={{
-            display: "flex",
-            margin: "40px",
-            fontSize: "20px",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: "20px",
-          }}
-        >
+        <div className="threshold-sliders">
           <div style={{ width: 500, margin: "0 30px" }}>
             <H5 style={{ marginBottom: 10 }}>padj Threshold</H5>
             <Slider

@@ -2,3 +2,11 @@
     background: rgb(60,89,194); /* Change the background color */
   }
   
+.threshold-sliders {
+    display: flex;
+    margin: 40px;
+    font-size: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
