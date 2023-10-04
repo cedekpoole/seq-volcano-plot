@@ -10,11 +10,9 @@ import ChartRenderer from "./ChartRenderer";
 import { parseCSVData } from "./helpers/CSVHandling";
 
 // initialising Highcharts with additional modules 
-if (typeof HighCharts === "object") {
   highchartsAccessibility(HighCharts);
   HC_exporting(HighCharts);
   HighChartsBoost(HighCharts);
-}
 
 function Chart() {
     // States for managing chart data and visibility
