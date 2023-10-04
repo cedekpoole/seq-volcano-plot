@@ -13,7 +13,7 @@ function ChartRenderer({
   // Sort the significantData array in descending order of the y value
   // and take the top 4 highest points for the annotations
   const topFourDataPoints = [...significantData]
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => b.y - a.y)
     .slice(0, 4);
 
   const options = {
@@ -77,10 +77,10 @@ function ChartRenderer({
           point: {
             xAxis: 0,
             yAxis: 0,
-            x: point[0],
-            y: point[1],
+            x: point.x,
+            y: point.y,
           },
-          text: point[2], // Adjust formatting as needed
+          text: point.gene, // Adjust formatting as needed
         })),
         labelOptions: {
           backgroundColor: "rgba(255,255,255,0.5)",
@@ -99,7 +99,7 @@ function ChartRenderer({
         // return `${this.point.gene} <br> <b>log2FC:</b> ${this.point.x.toFixed(
         //   2
         // )} <br> <b>-log10(padj):</b> ${this.point.y.toFixed(2)}`;
-        return this.point[2];
+        return this.point.gene;
       },
       hideDelay: 200,
     },

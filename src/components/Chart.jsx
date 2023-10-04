@@ -56,11 +56,11 @@ function Chart() {
         row.padj < padjThreshold &&
         (row.log2FoldChange > log2FCThreshold ||
           row.log2FoldChange < -log2FCThreshold);
-      const dataPoint = [
-        row.log2FoldChange,
-        -Math.log10(row.padj),
-        Object.values(row)[0],
-      ];
+      const dataPoint = {
+        x: row.log2FoldChange,
+        y: -Math.log10(row.padj),
+        gene: Object.values(row)[0],
+      };
       if (isSignificant) {
         significantDataTemp.push(dataPoint);
         changeCountTemp++;
@@ -190,5 +190,7 @@ function Chart() {
     </div>
   );
 }
+
+console.warn = () => {};
 
 export default Chart;
