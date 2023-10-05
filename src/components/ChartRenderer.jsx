@@ -96,7 +96,7 @@ function ChartRenderer({
           borderColor: "black",
           borderWidth: 0.5,
           style: {
-            fontSize: "10px",
+            fontSize: "12px",
           },
           overflow: "justify",
           crop: true,
