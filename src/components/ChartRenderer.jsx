@@ -22,7 +22,7 @@ function ChartRenderer({
     chart: {
       type: "scatter",
       zoomType: "xy",
-      height: "55%"
+      height: "60%"
     },
     title: {
       text: "Volcano Plot",
