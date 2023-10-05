@@ -69,7 +69,6 @@ function Chart() {
     setChangeCount(changeCountTemp);
     setNoChangeCount(noChangeCountTemp);
     updatePlotLines();
-    setShowChart(true);
   };
 
   const updatePlotLines = () => {
@@ -100,6 +99,7 @@ function Chart() {
   const handleSubmit = (event) => {
     event.preventDefault();
     parseData(parsedCsvData);
+    setShowChart(true);
   };
 
   const handleFileChange = (e) => {
