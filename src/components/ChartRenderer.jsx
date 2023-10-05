@@ -4,15 +4,17 @@ import annotationModule from "highcharts/modules/annotations";
 annotationModule(HighCharts);
 
 function ChartRenderer({
-  significantData,
+  upRegulatedGenes,
+  downRegulatedGenes,
   notSignificantData,
   plotLines,
-  changeCount,
+  upRegGeneCount,
+  downRegGeneCount,
   noChangeCount,
 }) {
   // Sort the significantData array in descending order of the y value
   // and take the top 4 highest points for the annotations
-  const topFourDataPoints = [...significantData]
+  const topFourDataPoints = [...upRegulatedGenes, ...downRegulatedGenes]
     .sort((a, b) => b.y - a.y)
     .slice(0, 4);
 
@@ -20,6 +22,7 @@ function ChartRenderer({
     chart: {
       type: "scatter",
       zoomType: "xy",
+      height: "55%"
     },
     title: {
       text: "Volcano Plot",
@@ -59,9 +62,15 @@ function ChartRenderer({
     },
     series: [
       {
-        name: "Significant Genes",
-        color: "rgb(60,89,194)",
-        data: significantData,
+        name: "Up-regulated Genes",
+        color: "rgb(39,116,255)",
+        data: upRegulatedGenes,
+        boostThreshold: 1,
+      },
+      {
+        name: "Down-regulated Genes",
+        color: "rgb(254,125,43)",
+        data: downRegulatedGenes,
         boostThreshold: 1,
       },
       {
@@ -109,7 +118,11 @@ function ChartRenderer({
       labelFormatter: function () {
         const series = this;
         const numPoints =
-          series.name === "Significant Genes" ? changeCount : noChangeCount;
+          series.name === "No Change"
+            ? noChangeCount
+            : series.name === "Up-regulated Genes"
+            ? upRegGeneCount
+            : downRegGeneCount;
         return `${series.name} (${numPoints})`;
       },
     },
@@ -121,7 +134,7 @@ function ChartRenderer({
   return (
     <div
       className="chart"
-      style={{ width: 500, height: 300, margin: "30px auto" }}
+      style={{ width: "80%", margin: "30px auto", paddingRight: 10 }}
       data-testid="chart"
     >
       <HighChartsReact highcharts={HighCharts} options={options} />

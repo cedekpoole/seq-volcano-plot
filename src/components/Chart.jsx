@@ -17,14 +17,16 @@ import { parseCSVData } from "./helpers/CSVHandling";
 function Chart() {
     // States for managing chart data and visibility
     const [showChart, setShowChart] = useState(false);
-    const [significantData, setSignificantData] = useState([]);
+    const [upRegulatedGenes, setUpRegulatedGenes] = useState([]);
+    const [downRegulatedGenes, setDownRegulatedGenes] = useState([]);
     const [notSignificantData, setNotSignificantData] = useState([]);
     const [parsedCsvData, setParsedCsvData] = useState([]);
   
     // States for managing thresholds and counts
     const [padjThreshold, setPadjThreshold] = useState(0);
     const [log2FCThreshold, setLog2FCThreshold] = useState(0);
-    const [changeCount, setChangeCount] = useState(0);
+    const [upRegGeneCount, setUpRegGeneCount] = useState(0);
+    const [downRegGeneCount, setDownRegGeneCount] = useState(0);
     const [noChangeCount, setNoChangeCount] = useState(0);
     const [plotLines, setPlotLines] = useState({
       padjThresholdLine: null,
@@ -40,9 +42,11 @@ function Chart() {
   }, [padjThreshold, log2FCThreshold]);
 
   const parseData = (data) => {
-    const significantDataTemp = [];
+    const upRegulatedGenesTemp = [];
+    const downRegulatedGenesTemp = [];
     const notSignificantDataTemp = [];
-    let changeCountTemp = 0;
+    let upRegGeneCountTemp = 0;
+    let downRegGeneCountTemp = 0;
     let noChangeCountTemp = 0;
     // loop through each row and add
     // the data to the appropriate series
@@ -57,16 +61,23 @@ function Chart() {
         gene: Object.values(row)[0],
       };
       if (isSignificant) {
-        significantDataTemp.push(dataPoint);
-        changeCountTemp++;
+        if (row.log2FoldChange > log2FCThreshold) {
+          upRegulatedGenesTemp.push(dataPoint);
+          upRegGeneCountTemp++;
+      } else {
+          downRegulatedGenesTemp.push(dataPoint);
+          downRegGeneCountTemp++;
+      }
       } else if (!isNaN(row.padj)) {
         notSignificantDataTemp.push(dataPoint);
         noChangeCountTemp++;
       }
     });
-    setSignificantData(significantDataTemp);
+    setUpRegulatedGenes(upRegulatedGenesTemp);
+    setDownRegulatedGenes(downRegulatedGenesTemp);
     setNotSignificantData(notSignificantDataTemp);
-    setChangeCount(changeCountTemp);
+    setUpRegGeneCount(upRegGeneCountTemp);
+    setDownRegGeneCount(downRegGeneCountTemp);
     setNoChangeCount(noChangeCountTemp);
     updatePlotLines();
   };
@@ -170,10 +181,12 @@ function Chart() {
       </form>
       {showChart && (
         <ChartRenderer
-          significantData={significantData}
+          upRegulatedGenes={upRegulatedGenes}
+          downRegulatedGenes={downRegulatedGenes}
           notSignificantData={notSignificantData}
           plotLines={plotLines}
-          changeCount={changeCount}
+          upRegGeneCount={upRegGeneCount}
+          downRegGeneCount={downRegGeneCount}
           noChangeCount={noChangeCount}
         />
       )}
