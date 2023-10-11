@@ -22,7 +22,7 @@ function ChartRenderer({
     chart: {
       type: "scatter",
       zoomType: "xy",
-      height: "60%"
+      height: "60%",
     },
     title: {
       text: "Volcano Plot",
@@ -134,7 +134,7 @@ function ChartRenderer({
   return (
     <div
       className="chart"
-      style={{ width: "80%", margin: "30px auto", paddingRight: 10 }}
+      style={{ width: "80%", margin: "0 auto", paddingRight: 10 }}
       data-testid="chart"
     >
       <HighChartsReact highcharts={HighCharts} options={options} />

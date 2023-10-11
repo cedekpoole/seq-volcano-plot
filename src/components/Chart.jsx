@@ -9,37 +9,57 @@ import "@blueprintjs/core/lib/css/blueprint.css";
 import ChartRenderer from "./ChartRenderer";
 import { parseCSVData } from "./helpers/CSVHandling";
 
-// initialising Highcharts with additional modules 
-  highchartsAccessibility(HighCharts);
-  HC_exporting(HighCharts);
-  HighChartsBoost(HighCharts);
+// initialising Highcharts with additional modules
+highchartsAccessibility(HighCharts);
+HC_exporting(HighCharts);
+HighChartsBoost(HighCharts);
 
 function Chart() {
-    // States for managing chart data and visibility
-    const [showChart, setShowChart] = useState(false);
-    const [upRegulatedGenes, setUpRegulatedGenes] = useState([]);
-    const [downRegulatedGenes, setDownRegulatedGenes] = useState([]);
-    const [notSignificantData, setNotSignificantData] = useState([]);
-    const [parsedCsvData, setParsedCsvData] = useState([]);
-  
-    // States for managing thresholds and counts
-    const [padjThreshold, setPadjThreshold] = useState(0);
-    const [log2FCThreshold, setLog2FCThreshold] = useState(0);
-    const [upRegGeneCount, setUpRegGeneCount] = useState(0);
-    const [downRegGeneCount, setDownRegGeneCount] = useState(0);
-    const [noChangeCount, setNoChangeCount] = useState(0);
-    const [plotLines, setPlotLines] = useState({
-      padjThresholdLine: null,
-      lowerLog2FCThresholdLine: null,
-      higherLog2FCThresholdLine: null,
-    });
-  
-    const fileInputRef = useRef();
-    const [selectedFileName, setSelectedFileName] = useState("");
+  // States for managing chart data and visibility
+  const [showChart, setShowChart] = useState(false);
+  const [upRegulatedGenes, setUpRegulatedGenes] = useState([]);
+  const [downRegulatedGenes, setDownRegulatedGenes] = useState([]);
+  const [notSignificantData, setNotSignificantData] = useState([]);
+  const [parsedCsvData, setParsedCsvData] = useState([]);
+
+  // States for managing thresholds and counts
+  const [padjThreshold, setPadjThreshold] = useState(0);
+  const [log2FCThreshold, setLog2FCThreshold] = useState(0);
+  const [upRegGeneCount, setUpRegGeneCount] = useState(0);
+  const [downRegGeneCount, setDownRegGeneCount] = useState(0);
+  const [noChangeCount, setNoChangeCount] = useState(0);
+  const [plotLines, setPlotLines] = useState({
+    padjThresholdLine: null,
+    lowerLog2FCThresholdLine: null,
+    higherLog2FCThresholdLine: null,
+  });
+
+  const fileInputRef = useRef();
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const [exportedFileContent, setExportedFileContent] = useState("");
 
   useEffect(() => {
     if (showChart) parseData(parsedCsvData);
   }, [padjThreshold, log2FCThreshold]);
+
+  useEffect(() => {
+    if (upRegulatedGenes.length > 0 || downRegulatedGenes.length > 0) {
+      const upRegulatedGenesCSV =
+        "Gene,log2FoldChange,padj\n" +
+        upRegulatedGenes
+          .map((g) => `${g.gene},${g.x},${Math.pow(10, -g.y)}`)
+          .join("\n");
+
+      const downRegulatedGenesCSV =
+        "Gene,log2FoldChange,padj\n" +
+        downRegulatedGenes
+          .map((g) => `${g.gene},${g.x},${Math.pow(10, -g.y)}`)
+          .join("\n");
+
+      const exportedContent = `Up Regulated Genes:\n${upRegulatedGenesCSV}\n\nDown Regulated Genes:\n${downRegulatedGenesCSV}`;
+      setExportedFileContent(exportedContent);
+    }
+  }, [upRegulatedGenes, downRegulatedGenes]);
 
   const parseData = (data) => {
     const upRegulatedGenesTemp = [];
@@ -64,10 +84,10 @@ function Chart() {
         if (row.log2FoldChange > log2FCThreshold) {
           upRegulatedGenesTemp.push(dataPoint);
           upRegGeneCountTemp++;
-      } else {
+        } else {
           downRegulatedGenesTemp.push(dataPoint);
           downRegGeneCountTemp++;
-      }
+        }
       } else if (!isNaN(row.padj)) {
         notSignificantDataTemp.push(dataPoint);
         noChangeCountTemp++;
@@ -177,18 +197,41 @@ function Chart() {
           text="Load Data"
           large
           data-testid="submit-button"
+          style={{ marginBottom: 30, fontSize: 16 }}
         />
       </form>
-      {showChart && (
-        <ChartRenderer
-          upRegulatedGenes={upRegulatedGenes}
-          downRegulatedGenes={downRegulatedGenes}
-          notSignificantData={notSignificantData}
-          plotLines={plotLines}
-          upRegGeneCount={upRegGeneCount}
-          downRegGeneCount={downRegGeneCount}
-          noChangeCount={noChangeCount}
-        />
+      {showChart && exportedFileContent && (
+        <div>
+          <ChartRenderer
+            upRegulatedGenes={upRegulatedGenes}
+            downRegulatedGenes={downRegulatedGenes}
+            notSignificantData={notSignificantData}
+            plotLines={plotLines}
+            upRegGeneCount={upRegGeneCount}
+            downRegGeneCount={downRegGeneCount}
+            noChangeCount={noChangeCount}
+          />
+          <div
+            style={{ textAlign: "center", margin: "0 0 30px 0"}}
+          >
+            <a
+              href={`data:text/csv;charset=utf-8,${encodeURIComponent(
+                exportedFileContent
+              )}`}
+              download={`genes_log2FC(${log2FCThreshold.toFixed(
+                1
+              )})_padj(${padjThreshold.toFixed(2)}).csv`}
+              id="download-link"
+              style={{ display: "none" }}
+            >
+              Download
+            </a>
+            <Button
+              text="Download Data"
+              onClick={() => document.getElementById("download-link").click()}
+            />
+          </div>
+        </div>
       )}
     </div>
   );
