@@ -4,7 +4,8 @@ import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
 import HighChartsBoost from "highcharts/modules/boost";
 import { useState, useRef, useEffect } from "react";
-import { Slider, H5, Button, FileInput } from "@blueprintjs/core";
+import { Slider, H5, Button, FileInput, MenuItem } from "@blueprintjs/core";
+import { Select } from "@blueprintjs/select";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import ChartRenderer from "./ChartRenderer";
 import { parseCSVData, download, convertToCsv } from "./helpers/CSVHandling";
@@ -36,7 +37,6 @@ function Chart() {
 
   const fileInputRef = useRef();
   const [selectedFileName, setSelectedFileName] = useState("");
-  const [exportedFileContent, setExportedFileContent] = useState("");
   const [upRegulatedCsvData, setUpRegulatedCsvData] = useState("");
   const [downRegulatedCsvData, setDownRegulatedCsvData] = useState("");
 
@@ -135,6 +135,17 @@ function Chart() {
     }
   };
 
+  const renderDownloadOptions = (item, { handleClick }) => (
+    <MenuItem
+      key={item.text}
+      text={item.text}
+      onClick={() => {
+        handleClick();
+        item.action();
+      }}
+    />
+  );
+
   return (
     <div>
       <form onSubmit={handleSubmit} style={{ textAlign: "center" }}>
@@ -208,19 +219,34 @@ function Chart() {
             downRegGeneCount={downRegGeneCount}
             noChangeCount={noChangeCount}
           />
-          <div style={{ textAlign: "center", margin: "0 0 30px 0" }}>
-            <Button
-              onClick={() =>
-                download("up-regulated-genes.csv", upRegulatedCsvData)
-              }
-              text="Download Up-Regulated Genes"
-            />
-            <Button
-              onClick={() =>
-                download("down-regulated-genes.csv", downRegulatedCsvData)
-              }
-              text="Download Down-Regulated Genes"
-            />
+          <div style={{ textAlign: "center", margin: "10px 0 30px 0" }}>
+            <div style={{ display: "inline-block" }}>
+              <Select
+                items={[
+                  {
+                    text: "Download Up-Regulated Genes",
+                    action: () =>
+                      download(
+                        `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                        upRegulatedCsvData
+                      ),
+                  },
+                  {
+                    text: "Download Down-Regulated Genes",
+                    action: () =>
+                      download(
+                        `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                        downRegulatedCsvData
+                      ),
+                  },
+                ]}
+                itemRenderer={renderDownloadOptions}
+                filterable={false}
+                onItemSelect={() => {}}
+              >
+                <Button text="Download" rightIcon="caret-down" />
+              </Select>
+            </div>
           </div>
         </div>
       )}
