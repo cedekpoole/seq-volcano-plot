@@ -23,8 +23,8 @@ function Chart() {
   const [parsedCsvData, setParsedCsvData] = useState([]);
 
   // States for managing thresholds and counts
-  const [padjThreshold, setPadjThreshold] = useState(0.01);
-  const [log2FCThreshold, setLog2FCThreshold] = useState(0);
+  const [padjThreshold, setPadjThreshold] = useState(0.05);
+  const [log2FCThreshold, setLog2FCThreshold] = useState(1);
   const [upRegGeneCount, setUpRegGeneCount] = useState(0);
   const [downRegGeneCount, setDownRegGeneCount] = useState(0);
   const [noChangeCount, setNoChangeCount] = useState(0);

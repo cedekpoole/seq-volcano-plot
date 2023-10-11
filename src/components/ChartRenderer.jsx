@@ -13,20 +13,25 @@ function ChartRenderer({
   downRegGeneCount,
   noChangeCount,
 }) {
-
   const [labeledPoints, setLabeledPoints] = useState([]);
   const options = {
+    exporting: {
+      sourceWidth: 1000,
+      sourceHeight: 1000,
+      scale: 1,
+    },
     chart: {
       type: "scatter",
       zoomType: "xy",
       height: "60%",
     },
     title: {
-      text: "Volcano Plot",
+      text: `.`,
+      style: {
+        color: "white"
+      }
     },
-    subtitle: {
-      text: "Click and drag within the plot area to zoom in",
-    },
+    
     xAxis: {
       zIndex: 10,
       title: {
