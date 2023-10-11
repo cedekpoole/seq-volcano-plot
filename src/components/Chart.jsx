@@ -23,7 +23,7 @@ function Chart() {
   const [parsedCsvData, setParsedCsvData] = useState([]);
 
   // States for managing thresholds and counts
-  const [padjThreshold, setPadjThreshold] = useState(0);
+  const [padjThreshold, setPadjThreshold] = useState(0.01);
   const [log2FCThreshold, setLog2FCThreshold] = useState(0);
   const [upRegGeneCount, setUpRegGeneCount] = useState(0);
   const [downRegGeneCount, setDownRegGeneCount] = useState(0);
@@ -40,7 +40,7 @@ function Chart() {
 
   useEffect(() => {
     if (showChart) parseData(parsedCsvData);
-  }, [padjThreshold, log2FCThreshold]);
+  }, [padjThreshold, log2FCThreshold, showChart]);
 
   useEffect(() => {
     if (upRegulatedGenes.length > 0 || downRegulatedGenes.length > 0) {
@@ -135,9 +135,12 @@ function Chart() {
 
   const handleFileChange = (e) => {
     setShowChart(false);
+    setSelectedFileName("");
     const file = e.target.files[0];
-    setSelectedFileName(file.name);
-    parseCSVData(fileInputRef, setParsedCsvData);
+    if (file) {
+      setSelectedFileName(file.name);
+      parseCSVData(fileInputRef, setParsedCsvData);
+    }
   };
 
   return (
@@ -160,10 +163,10 @@ function Chart() {
           <div style={{ width: 500, margin: "0 30px" }}>
             <H5 style={{ marginBottom: 10 }}>padj Threshold</H5>
             <Slider
-              min={0}
-              max={0.08}
+              min={0.01}
+              max={0.09}
               stepSize={0.01}
-              labelValues={[0, 0.01, 0.03, 0.05, 0.07, 0.08]}
+              labelValues={[0.01, 0.02, 0.04, 0.05, 0.06, 0.08, 0.09]}
               labelRenderer={(value) => {
                 return value === 0.01 || value === 0.05 ? (
                   <strong>{value.toFixed(2)}</strong>
@@ -211,9 +214,7 @@ function Chart() {
             downRegGeneCount={downRegGeneCount}
             noChangeCount={noChangeCount}
           />
-          <div
-            style={{ textAlign: "center", margin: "0 0 30px 0"}}
-          >
+          <div style={{ textAlign: "center", margin: "0 0 30px 0" }}>
             <a
               href={`data:text/csv;charset=utf-8,${encodeURIComponent(
                 exportedFileContent
