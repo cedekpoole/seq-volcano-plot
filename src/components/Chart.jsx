@@ -4,10 +4,11 @@ import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
 import HighChartsBoost from "highcharts/modules/boost";
 import { useState, useRef, useEffect } from "react";
-import { Slider, H5, Button, FileInput } from "@blueprintjs/core";
+import { Slider, H5, Button, FileInput, MenuItem } from "@blueprintjs/core";
+import { Select } from "@blueprintjs/select";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import ChartRenderer from "./ChartRenderer";
-import { parseCSVData } from "./helpers/CSVHandling";
+import { parseCSVData, download, convertToCsv } from "./helpers/CSVHandling";
 
 // initialising Highcharts with additional modules
 highchartsAccessibility(HighCharts);
@@ -36,28 +37,19 @@ function Chart() {
 
   const fileInputRef = useRef();
   const [selectedFileName, setSelectedFileName] = useState("");
-  const [exportedFileContent, setExportedFileContent] = useState("");
+  const [upRegulatedCsvData, setUpRegulatedCsvData] = useState("");
+  const [downRegulatedCsvData, setDownRegulatedCsvData] = useState("");
 
   useEffect(() => {
     if (showChart) parseData(parsedCsvData);
   }, [padjThreshold, log2FCThreshold, showChart]);
 
   useEffect(() => {
-    if (upRegulatedGenes.length > 0 || downRegulatedGenes.length > 0) {
-      const upRegulatedGenesCSV =
-        "Gene,log2FoldChange,padj\n" +
-        upRegulatedGenes
-          .map((g) => `${g.gene},${g.x},${Math.pow(10, -g.y)}`)
-          .join("\n");
-
-      const downRegulatedGenesCSV =
-        "Gene,log2FoldChange,padj\n" +
-        downRegulatedGenes
-          .map((g) => `${g.gene},${g.x},${Math.pow(10, -g.y)}`)
-          .join("\n");
-
-      const exportedContent = `Up Regulated Genes:\n${upRegulatedGenesCSV}\n\nDown Regulated Genes:\n${downRegulatedGenesCSV}`;
-      setExportedFileContent(exportedContent);
+    if (upRegulatedGenes.length > 0) {
+      setUpRegulatedCsvData(convertToCsv(upRegulatedGenes));
+    }
+    if (downRegulatedGenes.length > 0) {
+      setDownRegulatedCsvData(convertToCsv(downRegulatedGenes));
     }
   }, [upRegulatedGenes, downRegulatedGenes]);
 
@@ -143,6 +135,17 @@ function Chart() {
     }
   };
 
+  const renderDownloadOptions = (item, { handleClick }) => (
+    <MenuItem
+      key={item.text}
+      text={item.text}
+      onClick={() => {
+        handleClick();
+        item.action();
+      }}
+    />
+  );
+
   return (
     <div>
       <form onSubmit={handleSubmit} style={{ textAlign: "center" }}>
@@ -166,7 +169,9 @@ function Chart() {
               min={0.01}
               max={0.09}
               stepSize={0.01}
-              labelValues={[0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09]}
+              labelValues={[
+                0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
+              ]}
               labelRenderer={(value) => {
                 return value === 0.01 || value === 0.05 ? (
                   <strong>{value.toFixed(2)}</strong>
@@ -203,7 +208,7 @@ function Chart() {
           style={{ marginBottom: 30, fontSize: 16 }}
         />
       </form>
-      {showChart && exportedFileContent && (
+      {showChart && (
         <div>
           <ChartRenderer
             upRegulatedGenes={upRegulatedGenes}
@@ -214,23 +219,34 @@ function Chart() {
             downRegGeneCount={downRegGeneCount}
             noChangeCount={noChangeCount}
           />
-          <div style={{ textAlign: "center", margin: "0 0 30px 0" }}>
-            <a
-              href={`data:text/csv;charset=utf-8,${encodeURIComponent(
-                exportedFileContent
-              )}`}
-              download={`genes_log2FC${log2FCThreshold.toFixed(
-                1
-              )}_padj${padjThreshold.toFixed(2)}.csv`}
-              id="download-link"
-              style={{ display: "none" }}
-            >
-              Download
-            </a>
-            <Button
-              text="Download Data"
-              onClick={() => document.getElementById("download-link").click()}
-            />
+          <div style={{ textAlign: "center", margin: "10px 0 30px 0" }}>
+            <div style={{ display: "inline-block" }}>
+              <Select
+                items={[
+                  {
+                    text: "Download Up-Regulated Genes",
+                    action: () =>
+                      download(
+                        `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                        upRegulatedCsvData
+                      ),
+                  },
+                  {
+                    text: "Download Down-Regulated Genes",
+                    action: () =>
+                      download(
+                        `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                        downRegulatedCsvData
+                      ),
+                  },
+                ]}
+                itemRenderer={renderDownloadOptions}
+                filterable={false}
+                onItemSelect={() => {}}
+              >
+                <Button text="Download" rightIcon="caret-down" />
+              </Select>
+            </div>
           </div>
         </div>
       )}
