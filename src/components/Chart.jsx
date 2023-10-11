@@ -218,9 +218,9 @@ function Chart() {
               href={`data:text/csv;charset=utf-8,${encodeURIComponent(
                 exportedFileContent
               )}`}
-              download={`genes_log2FC(${log2FCThreshold.toFixed(
+              download={`genes_log2FC${log2FCThreshold.toFixed(
                 1
-              )})_padj(${padjThreshold.toFixed(2)}).csv`}
+              )}_padj${padjThreshold.toFixed(2)}.csv`}
               id="download-link"
               style={{ display: "none" }}
             >
