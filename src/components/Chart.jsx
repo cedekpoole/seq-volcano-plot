@@ -212,7 +212,7 @@ function Chart() {
             noChangeCount={noChangeCount}
           />
           <div
-            style={{ textAlign: "center", margin: "0 0 30px 0", fontSize: 16 }}
+            style={{ textAlign: "center", margin: "0 0 30px 0"}}
           >
             <a
               href={`data:text/csv;charset=utf-8,${encodeURIComponent(
@@ -228,7 +228,6 @@ function Chart() {
             </a>
             <Button
               text="Download Data"
-              large
               onClick={() => document.getElementById("download-link").click()}
             />
           </div>
