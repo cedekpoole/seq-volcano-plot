@@ -166,7 +166,7 @@ function Chart() {
               min={0.01}
               max={0.09}
               stepSize={0.01}
-              labelValues={[0.01, 0.02, 0.04, 0.05, 0.06, 0.08, 0.09]}
+              labelValues={[0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09]}
               labelRenderer={(value) => {
                 return value === 0.01 || value === 0.05 ? (
                   <strong>{value.toFixed(2)}</strong>
