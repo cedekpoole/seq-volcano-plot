@@ -1,6 +1,7 @@
 import HighChartsReact from "highcharts-react-official";
 import HighCharts from "highcharts";
 import annotationModule from "highcharts/modules/annotations";
+import { useState } from "react";
 annotationModule(HighCharts);
 
 function ChartRenderer({
@@ -12,12 +13,8 @@ function ChartRenderer({
   downRegGeneCount,
   noChangeCount,
 }) {
-  // Sort the significantData array in descending order of the y value
-  // and take the top 4 highest points for the annotations
-  const topFourDataPoints = [...upRegulatedGenes, ...downRegulatedGenes]
-    .sort((a, b) => b.y - a.y)
-    .slice(0, 4);
 
+  const [labeledPoints, setLabeledPoints] = useState([]);
   const options = {
     chart: {
       type: "scatter",
@@ -56,7 +53,36 @@ function ChartRenderer({
         turboThreshold: 100000,
         marker: {
           symbol: "circle",
-          radius: 2,
+          radius: 2.2,
+        },
+        cursor: "pointer",
+        point: {
+          events: {
+            click: function () {
+              const index = labeledPoints.findIndex(
+                (point) => point.x === this.x && point.y === this.y
+              );
+
+              if (index > -1) {
+                // If the point is already labeled
+                setLabeledPoints((points) =>
+                  points.filter((_, i) => i !== index)
+                ); // Remove label
+              } else {
+                // If the point is not labeled
+                setLabeledPoints((points) => [...points, this]); // Add label
+              }
+            },
+            mouseOver: function () {
+              if (this.series.halo) {
+                this.series.halo
+                  .attr({
+                    class: "highcharts-tracker",
+                  })
+                  .toFront();
+              }
+            },
+          },
         },
       },
     },
@@ -80,34 +106,32 @@ function ChartRenderer({
         boostThreshold: 1,
       },
     ],
-    annotations: [
-      {
-        labels: topFourDataPoints.map((point) => ({
+    annotations: labeledPoints.map((point) => ({
+      labels: [
+        {
           point: {
             xAxis: 0,
             yAxis: 0,
             x: point.x,
             y: point.y,
           },
-          text: point.gene, // Adjust formatting as needed
-        })),
-        labelOptions: {
-          backgroundColor: "rgba(255,255,255,0.5)",
-          borderColor: "black",
-          borderWidth: 0.5,
-          style: {
-            fontSize: "12px",
-          },
-          overflow: "justify",
-          crop: true,
+          text: point.gene,
+          draggable: "xy",
         },
+      ],
+      labelOptions: {
+        backgroundColor: "rgba(255,255,255,0.5)",
+        borderColor: "black",
+        borderWidth: 0.5,
+        style: {
+          fontSize: "12px",
+        },
+        overflow: "justify",
+        crop: true,
       },
-    ],
+    })),
     tooltip: {
       formatter: function () {
-        // return `${this.point.gene} <br> <b>log2FC:</b> ${this.point.x.toFixed(
-        //   2
-        // )} <br> <b>-log10(padj):</b> ${this.point.y.toFixed(2)}`;
         return this.point.gene;
       },
       hideDelay: 200,
