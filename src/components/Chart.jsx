@@ -197,6 +197,7 @@ function Chart() {
           text="Load Data"
           large
           data-testid="submit-button"
+          style={{ marginBottom: 30, fontSize: 16 }}
         />
       </form>
       {showChart && exportedFileContent && (
@@ -210,7 +211,9 @@ function Chart() {
             downRegGeneCount={downRegGeneCount}
             noChangeCount={noChangeCount}
           />
-          <div>
+          <div
+            style={{ textAlign: "center", margin: "0 0 30px 0", fontSize: 16 }}
+          >
             <a
               href={`data:text/csv;charset=utf-8,${encodeURIComponent(
                 exportedFileContent
@@ -225,6 +228,7 @@ function Chart() {
             </a>
             <Button
               text="Download Data"
+              large
               onClick={() => document.getElementById("download-link").click()}
             />
           </div>
