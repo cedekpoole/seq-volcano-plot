@@ -218,6 +218,8 @@ function Chart() {
             upRegGeneCount={upRegGeneCount}
             downRegGeneCount={downRegGeneCount}
             noChangeCount={noChangeCount}
+            padjThreshold={padjThreshold}
+            log2FCThreshold={log2FCThreshold}
           />
           <div style={{ textAlign: "center", margin: "10px 0 30px 0" }}>
             <div style={{ display: "inline-block" }}>
