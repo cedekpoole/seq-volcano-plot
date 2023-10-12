@@ -12,6 +12,8 @@ function ChartRenderer({
   upRegGeneCount,
   downRegGeneCount,
   noChangeCount,
+  padjThreshold,
+  log2FCThreshold,
 }) {
   const [labeledPoints, setLabeledPoints] = useState([]);
   const options = {
@@ -19,6 +21,7 @@ function ChartRenderer({
       sourceWidth: 1000,
       sourceHeight: 1000,
       scale: 1,
+      filename: `volcanoplot_padj${padjThreshold}_log2FC${log2FCThreshold}`
     },
     chart: {
       type: "scatter",
