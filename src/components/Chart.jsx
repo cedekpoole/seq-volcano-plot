@@ -46,22 +46,13 @@ function Chart() {
   const [selectedFileName, setSelectedFileName] = useState("");
   const [upRegulatedCsvData, setUpRegulatedCsvData] = useState("");
   const [downRegulatedCsvData, setDownRegulatedCsvData] = useState("");
+
   const [userInputGenes, setUserInputGenes] = useState("");
   const [labeledPoints, setLabeledPoints] = useState([]);
   const [genesList, setGenesList] = useState([]);
-
   const [suggestedGenes, setSuggestedGenes] = useState([]);
 
-  const filterGenes = (query, gene) => {
-    return gene.toLowerCase().indexOf(query.toLowerCase()) >= 0;
-  };
-
-  const handleGeneChange = (gene) => {
-    setUserInputGenes(gene);
-  };
-
   useEffect(() => {
-    // Collect all unique gene names from the data sets
     const allGenes = [
       ...new Set(
         [...upRegulatedGenes, ...downRegulatedGenes, ...notSignificantData].map(
@@ -192,11 +183,20 @@ function Chart() {
       setGenesList((prev) => [...new Set([...prev, ...validGenes])]);
       setUserInputGenes(""); // Clear the user input after adding genes to the list
     } else {
-      alert("The entered genes are not present in the graph.");
+      return;
     }
   };
+
   const removeGeneFromList = (gene) => {
     setGenesList((prev) => prev.filter((g) => g !== gene));
+  };
+
+  const filterGenes = (query, gene) => {
+    return gene.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+  };
+
+  const handleGeneChange = (gene) => {
+    setUserInputGenes(gene);
   };
 
   return (
@@ -267,7 +267,7 @@ function Chart() {
             <div style={{ marginBottom: 20 }}>
               <Suggest
                 items={suggestedGenes.slice(0, 10)}
-                itemRenderer={(gene, { handleClick, modifiers }) => {
+                itemRenderer={(gene, { handleClick }) => {
                   return (
                     <MenuItem key={gene} onClick={handleClick} text={gene} />
                   );
