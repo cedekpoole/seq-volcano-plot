@@ -17,16 +17,15 @@ function ChartRenderer({
   userInputGenes,
   labeledPoints,
   setLabeledPoints,
-  geneList,
+  genesList,
 }) {
 
 
-  const genesArray = userInputGenes.split(',').map(gene => gene.trim());
 
-const annotationsToRender = userInputGenes
-    ? upRegulatedGenes.concat(downRegulatedGenes, notSignificantData)
-        .filter(point => genesArray.includes(point.gene)).concat(labeledPoints)
-    : labeledPoints;
+  const annotationsToRender = genesList.length > 0
+  ? upRegulatedGenes.concat(downRegulatedGenes, notSignificantData)
+      .filter(point => genesList.includes(point.gene)).concat(labeledPoints)
+  : labeledPoints;
 
   const options = {
     exporting: {

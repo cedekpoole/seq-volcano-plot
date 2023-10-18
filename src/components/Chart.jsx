@@ -41,6 +41,7 @@ function Chart() {
   const [downRegulatedCsvData, setDownRegulatedCsvData] = useState("");
   const [userInputGenes, setUserInputGenes] = useState("");
   const [labeledPoints, setLabeledPoints] = useState([]);
+  const [genesList, setGenesList] = useState([]);
   
   useEffect(() => {
     if (showChart) parseData(parsedCsvData);
@@ -148,6 +149,16 @@ function Chart() {
     />
   );
 
+  const addGenesToList = () => {
+    const newGenes = userInputGenes.split(',').map(g => g.trim());
+    setGenesList(prev => [...new Set([...prev, ...newGenes])]);
+    setUserInputGenes('');  // Clear the user input after adding genes to the list
+  };
+
+  const removeGeneFromList = (gene) => {
+    setGenesList(prev => prev.filter(g => g !== gene));
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit} style={{ textAlign: "center" }}>
@@ -212,13 +223,32 @@ function Chart() {
       </form>
       {showChart && (
         <div>
-          <input
+          <input 
             type="text"
             value={userInputGenes}
             onChange={(e) => setUserInputGenes(e.target.value)}
             placeholder="Enter gene(s) separated by commas..."
-            style={{ margin: "10px 0", width: "100%" }}
+            style={{ margin: "10px 0", width: "80%" }}
           />
+          <Button
+            text="Add to List"
+            onClick={addGenesToList}
+            style={{ marginBottom: 30, fontSize: 16 }}
+          />
+
+          {/* Display the genes list */}
+          <ul>
+            {genesList.map(gene => (
+              <li key={gene}>
+                {gene} 
+                <Button 
+                  text="Remove" 
+                  onClick={() => removeGeneFromList(gene)} 
+                  small 
+                />
+              </li>
+            ))}
+          </ul>
           <Button
     text="Clear Annotations"
     onClick={() => {
@@ -239,6 +269,7 @@ function Chart() {
             userInputGenes={userInputGenes}
             labeledPoints={labeledPoints}
             setLabeledPoints={setLabeledPoints}
+            genesList={genesList}
           />
           <div style={{ textAlign: "center", margin: "10px 0 30px 0" }}>
             <div style={{ display: "inline-block" }}>
