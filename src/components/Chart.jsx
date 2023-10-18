@@ -39,7 +39,9 @@ function Chart() {
   const [selectedFileName, setSelectedFileName] = useState("");
   const [upRegulatedCsvData, setUpRegulatedCsvData] = useState("");
   const [downRegulatedCsvData, setDownRegulatedCsvData] = useState("");
-
+  const [userInputGenes, setUserInputGenes] = useState("");
+  const [labeledPoints, setLabeledPoints] = useState([]);
+  
   useEffect(() => {
     if (showChart) parseData(parsedCsvData);
   }, [padjThreshold, log2FCThreshold, showChart]);
@@ -210,6 +212,20 @@ function Chart() {
       </form>
       {showChart && (
         <div>
+          <input
+            type="text"
+            value={userInputGenes}
+            onChange={(e) => setUserInputGenes(e.target.value)}
+            placeholder="Enter gene(s) separated by commas..."
+            style={{ margin: "10px 0", width: "100%" }}
+          />
+          <Button
+    text="Clear Annotations"
+    onClick={() => {
+        setLabeledPoints([]);
+    }}
+    style={{ marginBottom: 30, fontSize: 16 }}
+/>
           <ChartRenderer
             upRegulatedGenes={upRegulatedGenes}
             downRegulatedGenes={downRegulatedGenes}
@@ -220,6 +236,9 @@ function Chart() {
             noChangeCount={noChangeCount}
             padjThreshold={padjThreshold}
             log2FCThreshold={log2FCThreshold}
+            userInputGenes={userInputGenes}
+            labeledPoints={labeledPoints}
+            setLabeledPoints={setLabeledPoints}
           />
           <div style={{ textAlign: "center", margin: "10px 0 30px 0" }}>
             <div style={{ display: "inline-block" }}>

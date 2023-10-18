@@ -14,8 +14,20 @@ function ChartRenderer({
   noChangeCount,
   padjThreshold,
   log2FCThreshold,
+  userInputGenes,
+  labeledPoints,
+  setLabeledPoints,
+  geneList,
 }) {
-  const [labeledPoints, setLabeledPoints] = useState([]);
+
+
+  const genesArray = userInputGenes.split(',').map(gene => gene.trim());
+
+const annotationsToRender = userInputGenes
+    ? upRegulatedGenes.concat(downRegulatedGenes, notSignificantData)
+        .filter(point => genesArray.includes(point.gene)).concat(labeledPoints)
+    : labeledPoints;
+
   const options = {
     exporting: {
       sourceWidth: 1000,
@@ -114,7 +126,7 @@ function ChartRenderer({
         boostThreshold: 1,
       },
     ],
-    annotations: labeledPoints.map((point) => ({
+    annotations: annotationsToRender.map((point) => ({
       labels: [
         {
           point: {
