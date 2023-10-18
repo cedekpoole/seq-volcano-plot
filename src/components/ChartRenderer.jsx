@@ -1,7 +1,6 @@
 import HighChartsReact from "highcharts-react-official";
 import HighCharts from "highcharts";
 import annotationModule from "highcharts/modules/annotations";
-import { useState } from "react";
 annotationModule(HighCharts);
 
 function ChartRenderer({

@@ -12,6 +12,7 @@ import {
   MenuItem,
   Tag,
 } from "@blueprintjs/core";
+import { Suggest } from "@blueprintjs/select";
 import { Select } from "@blueprintjs/select";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import ChartRenderer from "./ChartRenderer";
@@ -48,6 +49,28 @@ function Chart() {
   const [userInputGenes, setUserInputGenes] = useState("");
   const [labeledPoints, setLabeledPoints] = useState([]);
   const [genesList, setGenesList] = useState([]);
+
+  const [suggestedGenes, setSuggestedGenes] = useState([]);
+
+  const filterGenes = (query, gene) => {
+    return gene.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+  };
+
+  const handleGeneChange = (gene) => {
+    setUserInputGenes(gene);
+  };
+
+  useEffect(() => {
+    // Collect all unique gene names from the data sets
+    const allGenes = [
+      ...new Set(
+        [...upRegulatedGenes, ...downRegulatedGenes, ...notSignificantData].map(
+          (g) => g.gene
+        )
+      ),
+    ];
+    setSuggestedGenes(allGenes);
+  }, [showChart]);
 
   useEffect(() => {
     if (showChart) parseData(parsedCsvData);
@@ -240,62 +263,46 @@ function Chart() {
       </form>
       {showChart && (
         <div>
-          <div style={{marginLeft: "10%"}}>
-          <div style={{ marginBottom: "20px" }}>
-            <input
-              type="text"
-              value={userInputGenes}
-              onChange={(e) => setUserInputGenes(e.target.value)}
-              placeholder="Enter Gene Name"
-              style={{
-                padding: "5px",
-                width: "200px",
-                fontSize: "14px",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-              }}
-            />
-            <Button
-              text="+"
-              onClick={addGenesToList}
-              style={{
-                marginLeft: "10px",
-                fontSize: "18px",
-                backgroundColor: "rgb(60,89,193)",
-                color: "white",
-              }}
-            />
-          </div>
-
-          {/* Display the genes list */}
-          <div style={{ margin: "10px 0", minHeight: "50px" }}>
-            {genesList.map((gene) => (
-              <Tag
-                key={gene}
-                large
-                style={{
-                  margin: "5px",
-                  fontSize: "14px",
-                  backgroundColor: "rgb(60,89,193)",
+          <div style={{ marginLeft: "15%" }}>
+            <div style={{ marginBottom: 20 }}>
+              <Suggest
+                items={suggestedGenes.slice(0, 10)}
+                itemRenderer={(gene, { handleClick, modifiers }) => {
+                  return (
+                    <MenuItem key={gene} onClick={handleClick} text={gene} />
+                  );
                 }}
-                onRemove={() => removeGeneFromList(gene)}
-              >
-                {gene}
-              </Tag>
-            ))}
-          </div>
+                itemPredicate={filterGenes}
+                noResults={<MenuItem disabled={true} text="No results." />}
+                onItemSelect={handleGeneChange}
+                inputValueRenderer={(gene) => gene}
+                inputProps={{ placeholder: "Enter Gene Name" }}
+                popoverProps={{ minimal: true }}
+                className="gene-input"
+              />
+              <Button
+                text="+"
+                onClick={addGenesToList}
+                className="add-button"
+              />
+              <Button
+                text="Clear Labels"
+                onClick={() => setLabeledPoints([])}
+                className="clear-button"
+              />
+            </div>
 
-          <Button
-            text="Clear Labels"
-            onClick={() => {
-              setLabeledPoints([]);
-            }}
-            style={{
-              fontSize: "14px",
-              backgroundColor: "#d9534f",
-              color: "white",
-            }}
-          />
+            <div className="genes-list">
+              {genesList.map((gene) => (
+                <Tag
+                  key={gene}
+                  onRemove={() => removeGeneFromList(gene)}
+                  className="gene-tag"
+                >
+                  {gene}
+                </Tag>
+              ))}
+            </div>
           </div>
           <ChartRenderer
             upRegulatedGenes={upRegulatedGenes}

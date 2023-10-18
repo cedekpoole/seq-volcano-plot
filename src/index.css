@@ -11,6 +11,35 @@
   gap: 20px;
 }
 
-.highcharts-tracker {
-  cursor: pointer;
+.gene-input {
+  padding: 5px;
+  width: 200px;
+  font-size: 14px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.add-button {
+  margin-left: 10px;
+  font-size: 18px;
+  background-color: rgb(60, 89, 193);
+  color: white;
+}
+
+.clear-button {
+  font-size: 14px;
+  background-color: #d9534f;
+  color: white;
+  margin-left: 50px;
+}
+
+.genes-list {
+  margin: 10px 0;
+  min-height: 50px;
+}
+
+.gene-tag {
+  margin: 5px;
+  font-size: 14px;
+  background-color: rgb(60, 89, 193);
 }
