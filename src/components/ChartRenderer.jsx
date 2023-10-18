@@ -14,7 +14,6 @@ function ChartRenderer({
   noChangeCount,
   padjThreshold,
   log2FCThreshold,
-  userInputGenes,
   labeledPoints,
   setLabeledPoints,
   genesList,

@@ -4,7 +4,14 @@ import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
 import HighChartsBoost from "highcharts/modules/boost";
 import { useState, useRef, useEffect } from "react";
-import { Slider, H5, Button, FileInput, MenuItem } from "@blueprintjs/core";
+import {
+  Slider,
+  H5,
+  Button,
+  FileInput,
+  MenuItem,
+  Tag,
+} from "@blueprintjs/core";
 import { Select } from "@blueprintjs/select";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import ChartRenderer from "./ChartRenderer";
@@ -22,7 +29,6 @@ function Chart() {
   const [downRegulatedGenes, setDownRegulatedGenes] = useState([]);
   const [notSignificantData, setNotSignificantData] = useState([]);
   const [parsedCsvData, setParsedCsvData] = useState([]);
-
   // States for managing thresholds and counts
   const [padjThreshold, setPadjThreshold] = useState(0.05);
   const [log2FCThreshold, setLog2FCThreshold] = useState(1);
@@ -42,7 +48,7 @@ function Chart() {
   const [userInputGenes, setUserInputGenes] = useState("");
   const [labeledPoints, setLabeledPoints] = useState([]);
   const [genesList, setGenesList] = useState([]);
-  
+
   useEffect(() => {
     if (showChart) parseData(parsedCsvData);
   }, [padjThreshold, log2FCThreshold, showChart]);
@@ -150,13 +156,24 @@ function Chart() {
   );
 
   const addGenesToList = () => {
-    const newGenes = userInputGenes.split(',').map(g => g.trim());
-    setGenesList(prev => [...new Set([...prev, ...newGenes])]);
-    setUserInputGenes('');  // Clear the user input after adding genes to the list
-  };
+    const newGenes = userInputGenes.split(",").map((g) => g.trim());
 
+    const validGenes = newGenes.filter(
+      (gene) =>
+        upRegulatedGenes.some((point) => point.gene === gene) ||
+        downRegulatedGenes.some((point) => point.gene === gene) ||
+        notSignificantData.some((point) => point.gene === gene)
+    );
+
+    if (validGenes.length > 0) {
+      setGenesList((prev) => [...new Set([...prev, ...validGenes])]);
+      setUserInputGenes(""); // Clear the user input after adding genes to the list
+    } else {
+      alert("The entered genes are not present in the graph.");
+    }
+  };
   const removeGeneFromList = (gene) => {
-    setGenesList(prev => prev.filter(g => g !== gene));
+    setGenesList((prev) => prev.filter((g) => g !== gene));
   };
 
   return (
@@ -223,39 +240,63 @@ function Chart() {
       </form>
       {showChart && (
         <div>
-          <input 
-            type="text"
-            value={userInputGenes}
-            onChange={(e) => setUserInputGenes(e.target.value)}
-            placeholder="Enter gene(s) separated by commas..."
-            style={{ margin: "10px 0", width: "80%" }}
-          />
-          <Button
-            text="Add to List"
-            onClick={addGenesToList}
-            style={{ marginBottom: 30, fontSize: 16 }}
-          />
+          <div style={{marginLeft: "10%"}}>
+          <div style={{ marginBottom: "20px" }}>
+            <input
+              type="text"
+              value={userInputGenes}
+              onChange={(e) => setUserInputGenes(e.target.value)}
+              placeholder="Enter Gene Name"
+              style={{
+                padding: "5px",
+                width: "200px",
+                fontSize: "14px",
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+              }}
+            />
+            <Button
+              text="+"
+              onClick={addGenesToList}
+              style={{
+                marginLeft: "10px",
+                fontSize: "18px",
+                backgroundColor: "rgb(60,89,193)",
+                color: "white",
+              }}
+            />
+          </div>
 
           {/* Display the genes list */}
-          <ul>
-            {genesList.map(gene => (
-              <li key={gene}>
-                {gene} 
-                <Button 
-                  text="Remove" 
-                  onClick={() => removeGeneFromList(gene)} 
-                  small 
-                />
-              </li>
+          <div style={{ margin: "10px 0", minHeight: "50px" }}>
+            {genesList.map((gene) => (
+              <Tag
+                key={gene}
+                large
+                style={{
+                  margin: "5px",
+                  fontSize: "14px",
+                  backgroundColor: "rgb(60,89,193)",
+                }}
+                onRemove={() => removeGeneFromList(gene)}
+              >
+                {gene}
+              </Tag>
             ))}
-          </ul>
+          </div>
+
           <Button
-    text="Clear Annotations"
-    onClick={() => {
-        setLabeledPoints([]);
-    }}
-    style={{ marginBottom: 30, fontSize: 16 }}
-/>
+            text="Clear Labels"
+            onClick={() => {
+              setLabeledPoints([]);
+            }}
+            style={{
+              fontSize: "14px",
+              backgroundColor: "#d9534f",
+              color: "white",
+            }}
+          />
+          </div>
           <ChartRenderer
             upRegulatedGenes={upRegulatedGenes}
             downRegulatedGenes={downRegulatedGenes}
