@@ -1,7 +1,6 @@
 import HighChartsReact from "highcharts-react-official";
 import HighCharts from "highcharts";
 import annotationModule from "highcharts/modules/annotations";
-import { useState } from "react";
 annotationModule(HighCharts);
 
 function ChartRenderer({
@@ -14,14 +13,22 @@ function ChartRenderer({
   noChangeCount,
   padjThreshold,
   log2FCThreshold,
+  labeledPoints,
+  setLabeledPoints,
+  genesList,
+  setGenesList,
 }) {
-  const [labeledPoints, setLabeledPoints] = useState([]);
+  const annotationsToRender = upRegulatedGenes
+    .concat(downRegulatedGenes, notSignificantData)
+    .filter((point) => genesList.includes(point.gene))
+    .concat(labeledPoints);
+
   const options = {
     exporting: {
       sourceWidth: 1000,
       sourceHeight: 1000,
       scale: 1,
-      filename: `volcanoplot_padj${padjThreshold}_log2FC${log2FCThreshold}`
+      filename: `volcanoplot_padj${padjThreshold}_log2FC${log2FCThreshold}`,
     },
     chart: {
       type: "scatter",
@@ -31,10 +38,10 @@ function ChartRenderer({
     title: {
       text: `.`,
       style: {
-        color: "white"
-      }
+        color: "white",
+      },
     },
-    
+
     xAxis: {
       zIndex: 10,
       title: {
@@ -70,16 +77,27 @@ function ChartRenderer({
               const index = labeledPoints.findIndex(
                 (point) => point.x === this.x && point.y === this.y
               );
-
+        
               if (index > -1) {
                 // If the point is already labeled
                 setLabeledPoints((points) =>
                   points.filter((_, i) => i !== index)
                 ); // Remove label
+        
+                // Remove the gene from the genesList
+                if (genesList.includes(this.gene)) {
+                  setGenesList((prev) => prev.filter((g) => g !== this.gene));
+                }
               } else {
                 // If the point is not labeled
                 setLabeledPoints((points) => [...points, this]); // Add label
+        
+                // Add the gene to the genesList
+                if (!genesList.includes(this.gene)) {
+                  setGenesList((prev) => [...prev, this.gene]);
+                }
               }
+            
             },
             mouseOver: function () {
               if (this.series.halo) {
@@ -114,7 +132,7 @@ function ChartRenderer({
         boostThreshold: 1,
       },
     ],
-    annotations: labeledPoints.map((point) => ({
+    annotations: annotationsToRender.map((point) => ({
       labels: [
         {
           point: {
@@ -136,6 +154,7 @@ function ChartRenderer({
         },
         overflow: "justify",
         crop: true,
+        allowOverlap: true,
       },
     })),
     tooltip: {

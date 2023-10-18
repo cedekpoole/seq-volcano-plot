@@ -4,8 +4,15 @@ import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
 import HighChartsBoost from "highcharts/modules/boost";
 import { useState, useRef, useEffect } from "react";
-import { Slider, H5, Button, FileInput, MenuItem } from "@blueprintjs/core";
-import { Select } from "@blueprintjs/select";
+import {
+  Slider,
+  H5,
+  Button,
+  FileInput,
+  MenuItem,
+  Tag,
+} from "@blueprintjs/core";
+import { Suggest, Select } from "@blueprintjs/select";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import ChartRenderer from "./ChartRenderer";
 import { parseCSVData, download, convertToCsv } from "./helpers/CSVHandling";
@@ -22,7 +29,6 @@ function Chart() {
   const [downRegulatedGenes, setDownRegulatedGenes] = useState([]);
   const [notSignificantData, setNotSignificantData] = useState([]);
   const [parsedCsvData, setParsedCsvData] = useState([]);
-
   // States for managing thresholds and counts
   const [padjThreshold, setPadjThreshold] = useState(0.05);
   const [log2FCThreshold, setLog2FCThreshold] = useState(1);
@@ -39,6 +45,22 @@ function Chart() {
   const [selectedFileName, setSelectedFileName] = useState("");
   const [upRegulatedCsvData, setUpRegulatedCsvData] = useState("");
   const [downRegulatedCsvData, setDownRegulatedCsvData] = useState("");
+
+  const [userInputGenes, setUserInputGenes] = useState("");
+  const [labeledPoints, setLabeledPoints] = useState([]);
+  const [genesList, setGenesList] = useState([]);
+  const [suggestedGenes, setSuggestedGenes] = useState([]);
+
+  useEffect(() => {
+    const allGenes = [
+      ...new Set(
+        [...upRegulatedGenes, ...downRegulatedGenes].map(
+          (g) => g.gene
+        )
+      ),
+    ];
+    setSuggestedGenes(allGenes);
+  }, [upRegulatedGenes, downRegulatedGenes]);
 
   useEffect(() => {
     if (showChart) parseData(parsedCsvData);
@@ -146,6 +168,42 @@ function Chart() {
     />
   );
 
+  const addGenesToList = () => {
+    const newGenes = userInputGenes.split(",").map((g) => g.trim());
+
+    const validGenes = newGenes.filter(
+      (gene) =>
+        upRegulatedGenes.some((point) => point.gene === gene) ||
+        downRegulatedGenes.some((point) => point.gene === gene) ||
+        notSignificantData.some((point) => point.gene === gene)
+    );
+
+    if (validGenes.length > 0) {
+      setGenesList((prev) => [...new Set([...prev, ...validGenes])]);
+      setUserInputGenes(""); // Clear the user input after adding genes to the list
+    } else {
+      return;
+    }
+  };
+
+  const removeGeneFromList = (gene) => {
+    setGenesList((prev) => prev.filter((g) => g !== gene));
+  
+    // Also remove the point from labeledPoints
+    setLabeledPoints((prev) => 
+      prev.filter((point) => point.gene !== gene)
+    );
+  };
+
+  const filterGenes = (query, gene) => {
+    return gene.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+  };
+
+  const handleGeneChange = (gene) => {
+    // Set the selected gene directly to the genesList state
+    setGenesList((prev) => [...new Set([...prev, gene])]);
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit} style={{ textAlign: "center" }}>
@@ -210,6 +268,53 @@ function Chart() {
       </form>
       {showChart && (
         <div>
+          <div style={{ marginLeft: "15%" }}>
+            <div style={{ marginBottom: 20 }}>
+              <Suggest
+                items={suggestedGenes}
+                itemRenderer={(gene, { handleClick, modifiers }) => {
+                  return (
+                    <MenuItem key={gene} onClick={handleClick} text={gene} />
+                  );
+                }}
+                itemPredicate={filterGenes}
+                noResults={<MenuItem disabled={true} text="No results." />}
+                onItemSelect={(gene) => {
+                  handleGeneChange(gene)
+                  addGenesToList()
+                }}
+                inputValueRenderer={(gene) => gene}
+                inputProps={{ placeholder: "Enter Gene Name" }}
+                popoverProps={{ minimal: true }}
+                className="gene-input"
+              />
+              <Button
+                text="+"
+                onClick={addGenesToList}
+                className="add-button"
+              />
+              <Button
+                text="Clear Labels"
+                onClick={() => {
+                  setLabeledPoints([])
+                  setGenesList([])
+                }}
+                className="clear-button"
+              />
+            </div>
+
+            <div className="genes-list">
+              {genesList.map((gene) => (
+                <Tag
+                  key={gene}
+                  onRemove={() => removeGeneFromList(gene)}
+                  className="gene-tag"
+                >
+                  {gene}
+                </Tag>
+              ))}
+            </div>
+          </div>
           <ChartRenderer
             upRegulatedGenes={upRegulatedGenes}
             downRegulatedGenes={downRegulatedGenes}
@@ -220,6 +325,11 @@ function Chart() {
             noChangeCount={noChangeCount}
             padjThreshold={padjThreshold}
             log2FCThreshold={log2FCThreshold}
+            userInputGenes={userInputGenes}
+            labeledPoints={labeledPoints}
+            setLabeledPoints={setLabeledPoints}
+            genesList={genesList}
+            setGenesList={setGenesList}
           />
           <div style={{ textAlign: "center", margin: "10px 0 30px 0" }}>
             <div style={{ display: "inline-block" }}>
