@@ -12,8 +12,7 @@ import {
   MenuItem,
   Tag,
 } from "@blueprintjs/core";
-import { Suggest } from "@blueprintjs/select";
-import { Select } from "@blueprintjs/select";
+import { Suggest, Select } from "@blueprintjs/select";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import ChartRenderer from "./ChartRenderer";
 import { parseCSVData, download, convertToCsv } from "./helpers/CSVHandling";
@@ -55,13 +54,13 @@ function Chart() {
   useEffect(() => {
     const allGenes = [
       ...new Set(
-        [...upRegulatedGenes, ...downRegulatedGenes, ...notSignificantData].map(
+        [...upRegulatedGenes, ...downRegulatedGenes].map(
           (g) => g.gene
         )
       ),
     ];
     setSuggestedGenes(allGenes);
-  }, [showChart]);
+  }, [upRegulatedGenes, downRegulatedGenes]);
 
   useEffect(() => {
     if (showChart) parseData(parsedCsvData);
@@ -189,6 +188,11 @@ function Chart() {
 
   const removeGeneFromList = (gene) => {
     setGenesList((prev) => prev.filter((g) => g !== gene));
+  
+    // Also remove the point from labeledPoints
+    setLabeledPoints((prev) => 
+      prev.filter((point) => point.gene !== gene)
+    );
   };
 
   const filterGenes = (query, gene) => {
@@ -266,8 +270,8 @@ function Chart() {
           <div style={{ marginLeft: "15%" }}>
             <div style={{ marginBottom: 20 }}>
               <Suggest
-                items={suggestedGenes.slice(0, 10)}
-                itemRenderer={(gene, { handleClick }) => {
+                items={suggestedGenes}
+                itemRenderer={(gene, { handleClick, modifiers }) => {
                   return (
                     <MenuItem key={gene} onClick={handleClick} text={gene} />
                   );
@@ -287,7 +291,10 @@ function Chart() {
               />
               <Button
                 text="Clear Labels"
-                onClick={() => setLabeledPoints([])}
+                onClick={() => {
+                  setLabeledPoints([])
+                  setGenesList([])
+                }}
                 className="clear-button"
               />
             </div>
@@ -318,6 +325,7 @@ function Chart() {
             labeledPoints={labeledPoints}
             setLabeledPoints={setLabeledPoints}
             genesList={genesList}
+            setGenesList={setGenesList}
           />
           <div style={{ textAlign: "center", margin: "10px 0 30px 0" }}>
             <div style={{ display: "inline-block" }}>
