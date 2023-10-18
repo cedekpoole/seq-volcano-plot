@@ -21,7 +21,6 @@ function ChartRenderer({
   const annotationsToRender = upRegulatedGenes
     .concat(downRegulatedGenes, notSignificantData)
     .filter((point) => genesList.includes(point.gene))
-    .concat(labeledPoints);
 
   const options = {
     exporting: {
