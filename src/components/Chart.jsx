@@ -200,7 +200,8 @@ function Chart() {
   };
 
   const handleGeneChange = (gene) => {
-    setUserInputGenes(gene);
+    // Set the selected gene directly to the genesList state
+    setGenesList((prev) => [...new Set([...prev, gene])]);
   };
 
   return (
@@ -278,7 +279,10 @@ function Chart() {
                 }}
                 itemPredicate={filterGenes}
                 noResults={<MenuItem disabled={true} text="No results." />}
-                onItemSelect={handleGeneChange}
+                onItemSelect={(gene) => {
+                  handleGeneChange(gene)
+                  addGenesToList()
+                }}
                 inputValueRenderer={(gene) => gene}
                 inputProps={{ placeholder: "Enter Gene Name" }}
                 popoverProps={{ minimal: true }}

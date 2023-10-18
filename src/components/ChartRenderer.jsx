@@ -154,6 +154,7 @@ function ChartRenderer({
         },
         overflow: "justify",
         crop: true,
+        allowOverlap: true,
       },
     })),
     tooltip: {
