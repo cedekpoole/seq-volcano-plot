@@ -20,7 +20,7 @@ function ChartRenderer({
 }) {
   const annotationsToRender = upRegulatedGenes
     .concat(downRegulatedGenes, notSignificantData)
-    .filter((point) => genesList.includes(point.gene))
+    .filter((point) => genesList.includes(point.gene));
 
   const options = {
     exporting: {
@@ -73,30 +73,23 @@ function ChartRenderer({
         point: {
           events: {
             click: function () {
-              const index = labeledPoints.findIndex(
-                (point) => point.x === this.x && point.y === this.y
-              );
-        
-              if (index > -1) {
-                // If the point is already labeled
-                setLabeledPoints((points) =>
-                  points.filter((_, i) => i !== index)
-                ); // Remove label
-        
-                // Remove the gene from the genesList
-                if (genesList.includes(this.gene)) {
-                  setGenesList((prev) => prev.filter((g) => g !== this.gene));
-                }
+              const isGeneInList = genesList.includes(this.gene);
+
+              if (isGeneInList) {
+                // If the gene is in the list, remove it
+                setGenesList((prev) => prev.filter((g) => g !== this.gene));
+
+                // Also remove the label
+                setLabeledPoints((prev) =>
+                  prev.filter((point) => point.gene !== this.gene)
+                );
               } else {
-                // If the point is not labeled
-                setLabeledPoints((points) => [...points, this]); // Add label
-        
-                // Add the gene to the genesList
-                if (!genesList.includes(this.gene)) {
-                  setGenesList((prev) => [...prev, this.gene]);
-                }
+                // If the gene is not in the list, add it
+                setGenesList((prev) => [...prev, this.gene]);
+
+                // Also add the label
+                setLabeledPoints((points) => [...points, this]);
               }
-            
             },
             mouseOver: function () {
               if (this.series.halo) {
@@ -151,8 +144,6 @@ function ChartRenderer({
         style: {
           fontSize: "12px",
         },
-        overflow: "justify",
-        crop: true,
         allowOverlap: true,
       },
     })),
