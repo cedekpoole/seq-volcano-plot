@@ -69,6 +69,11 @@ function ChartRenderer({
           symbol: "circle",
           radius: 2.2,
         },
+        states: {
+          inactive: {
+            opacity: 1
+          }
+        },
         cursor: "pointer",
         point: {
           events: {
@@ -109,13 +114,13 @@ function ChartRenderer({
         name: "Up-regulated Genes",
         color: "rgb(39,116,255)",
         data: upRegulatedGenes,
-        boostThreshold: 1,
+        boostThreshold: 300,
       },
       {
         name: "Down-regulated Genes",
         color: "rgb(254,125,43)",
         data: downRegulatedGenes,
-        boostThreshold: 1,
+        boostThreshold: 300,
       },
       {
         name: "No Change",
