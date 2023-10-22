@@ -13,8 +13,6 @@ function ChartRenderer({
   noChangeCount,
   padjThreshold,
   log2FCThreshold,
-  labeledPoints,
-  setLabeledPoints,
   genesList,
   setGenesList,
 }) {
@@ -69,6 +67,11 @@ function ChartRenderer({
           symbol: "circle",
           radius: 2.2,
         },
+        states: {
+          inactive: {
+            opacity: 1,
+          },
+        },
         cursor: "pointer",
         point: {
           events: {
@@ -78,17 +81,9 @@ function ChartRenderer({
               if (isGeneInList) {
                 // If the gene is in the list, remove it
                 setGenesList((prev) => prev.filter((g) => g !== this.gene));
-
-                // Also remove the label
-                setLabeledPoints((prev) =>
-                  prev.filter((point) => point.gene !== this.gene)
-                );
               } else {
                 // If the gene is not in the list, add it
                 setGenesList((prev) => [...prev, this.gene]);
-
-                // Also add the label
-                setLabeledPoints((points) => [...points, this]);
               }
             },
             mouseOver: function () {
@@ -109,13 +104,13 @@ function ChartRenderer({
         name: "Up-regulated Genes",
         color: "rgb(39,116,255)",
         data: upRegulatedGenes,
-        boostThreshold: 1,
+        boostThreshold: 300,
       },
       {
         name: "Down-regulated Genes",
         color: "rgb(254,125,43)",
         data: downRegulatedGenes,
-        boostThreshold: 1,
+        boostThreshold: 300,
       },
       {
         name: "No Change",
