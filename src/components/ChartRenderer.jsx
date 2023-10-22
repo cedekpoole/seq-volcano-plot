@@ -13,8 +13,6 @@ function ChartRenderer({
   noChangeCount,
   padjThreshold,
   log2FCThreshold,
-  labeledPoints,
-  setLabeledPoints,
   genesList,
   setGenesList,
 }) {
@@ -71,8 +69,8 @@ function ChartRenderer({
         },
         states: {
           inactive: {
-            opacity: 1
-          }
+            opacity: 1,
+          },
         },
         cursor: "pointer",
         point: {
@@ -83,17 +81,9 @@ function ChartRenderer({
               if (isGeneInList) {
                 // If the gene is in the list, remove it
                 setGenesList((prev) => prev.filter((g) => g !== this.gene));
-
-                // Also remove the label
-                setLabeledPoints((prev) =>
-                  prev.filter((point) => point.gene !== this.gene)
-                );
               } else {
                 // If the gene is not in the list, add it
                 setGenesList((prev) => [...prev, this.gene]);
-
-                // Also add the label
-                setLabeledPoints((points) => [...points, this]);
               }
             },
             mouseOver: function () {

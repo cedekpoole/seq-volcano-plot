@@ -47,16 +47,13 @@ function Chart() {
   const [downRegulatedCsvData, setDownRegulatedCsvData] = useState("");
 
   const [userInputGenes, setUserInputGenes] = useState("");
-  const [labeledPoints, setLabeledPoints] = useState([]);
   const [genesList, setGenesList] = useState([]);
   const [suggestedGenes, setSuggestedGenes] = useState([]);
 
   useEffect(() => {
     const allGenes = [
       ...new Set(
-        [...upRegulatedGenes, ...downRegulatedGenes].map(
-          (g) => g.gene
-        )
+        [...upRegulatedGenes, ...downRegulatedGenes].map((g) => g.gene)
       ),
     ];
     setSuggestedGenes(allGenes);
@@ -188,11 +185,6 @@ function Chart() {
 
   const removeGeneFromList = (gene) => {
     setGenesList((prev) => prev.filter((g) => g !== gene));
-  
-    // Also remove the point from labeledPoints
-    setLabeledPoints((prev) => 
-      prev.filter((point) => point.gene !== gene)
-    );
   };
 
   const filterGenes = (query, gene) => {
@@ -280,8 +272,8 @@ function Chart() {
                 itemPredicate={filterGenes}
                 noResults={<MenuItem disabled={true} text="No results." />}
                 onItemSelect={(gene) => {
-                  handleGeneChange(gene)
-                  addGenesToList()
+                  handleGeneChange(gene);
+                  addGenesToList();
                 }}
                 inputValueRenderer={(gene) => gene}
                 inputProps={{ placeholder: "Enter Gene Name" }}
@@ -296,8 +288,7 @@ function Chart() {
               <Button
                 text="Clear Labels"
                 onClick={() => {
-                  setLabeledPoints([])
-                  setGenesList([])
+                  setGenesList([]);
                 }}
                 className="clear-button"
               />
@@ -326,8 +317,6 @@ function Chart() {
             padjThreshold={padjThreshold}
             log2FCThreshold={log2FCThreshold}
             userInputGenes={userInputGenes}
-            labeledPoints={labeledPoints}
-            setLabeledPoints={setLabeledPoints}
             genesList={genesList}
             setGenesList={setGenesList}
           />
