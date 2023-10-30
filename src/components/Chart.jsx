@@ -233,6 +233,35 @@ function Chart() {
             data-testid="submit-button"
             style={{ fontSize: 16 }}
           />
+          {showChart && (
+            <div style={{ display: "inline-block", marginLeft: 20 }}>
+            <Select
+              items={[
+                {
+                  text: "Download Up-Regulated Genes",
+                  action: () =>
+                    download(
+                      `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                      upRegulatedCsvData
+                    ),
+                },
+                {
+                  text: "Download Down-Regulated Genes",
+                  action: () =>
+                    download(
+                      `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                      downRegulatedCsvData
+                    ),
+                },
+              ]}
+              itemRenderer={renderDownloadOptions}
+              filterable={false}
+              onItemSelect={() => {}}
+            >
+              <Button text="Download" rightIcon="caret-down" />
+            </Select>
+          </div>
+          )}
         </div>
         <div
           style={{
@@ -343,35 +372,6 @@ function Chart() {
             genesList={genesList}
             setGenesList={setGenesList}
           />
-          <div style={{ textAlign: "center", margin: "10px 0 30px 0" }}>
-            <div style={{ display: "inline-block" }}>
-              <Select
-                items={[
-                  {
-                    text: "Download Up-Regulated Genes",
-                    action: () =>
-                      download(
-                        `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
-                        upRegulatedCsvData
-                      ),
-                  },
-                  {
-                    text: "Download Down-Regulated Genes",
-                    action: () =>
-                      download(
-                        `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
-                        downRegulatedCsvData
-                      ),
-                  },
-                ]}
-                itemRenderer={renderDownloadOptions}
-                filterable={false}
-                onItemSelect={() => {}}
-              >
-                <Button text="Download" rightIcon="caret-down" />
-              </Select>
-            </div>
-          </div>
         </div>
       )}
     </div>
