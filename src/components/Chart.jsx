@@ -7,7 +7,6 @@ import { useState, useRef, useEffect } from "react";
 import {
   Slider,
   H5,
-  H6,
   Button,
   FileInput,
   MenuItem,
@@ -199,113 +198,134 @@ function Chart() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 30}}>
-        <div style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-        {/* add a file input to allow the user to upload a csv file */}
-        <div className="file-input" style={{ marginRight: 20}}>
-          <FileInput
-            text={selectedFileName || "Choose a CSV file..."}
-            inputProps={{
-              accept: ".csv",
-              ref: fileInputRef,
-              required: true,
-            }}
-            onInputChange={handleFileChange}
-            data-testid="file-input"
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginTop: 30,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          {/* add a file input to allow the user to upload a csv file */}
+          <div className="file-input" style={{ marginRight: 20 }}>
+            <FileInput
+              text={selectedFileName || "Choose a CSV file..."}
+              inputProps={{
+                accept: ".csv",
+                ref: fileInputRef,
+                required: true,
+              }}
+              onInputChange={handleFileChange}
+              data-testid="file-input"
+            />
+          </div>
+          <Button
+            type="submit"
+            text="Load Data"
+            data-testid="submit-button"
+            style={{ fontSize: 16 }}
           />
         </div>
-        <Button
-          type="submit"
-          text="Load Data"
-          data-testid="submit-button"
-          style={{ fontSize: 16 }}
-        />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '80%' }}>
-        <div style={{ width: '45%', marginTop: 30 }}>
-          <H5 style={{}}>Thresholds</H5>
-          <div style={{ width: '100%', marginBottom: 20 }}>
-            <p style={{ marginBottom: 10 }}>padj Threshold</p>
-            <Slider
-            min={0.01}
-            max={0.09}
-            stepSize={0.01}
-            labelValues={[
-              0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
-            ]}
-            labelRenderer={(value) => {
-              return value === 0.01 || value === 0.05 ? (
-                <strong>{value.toFixed(2)}</strong>
-              ) : (
-                value.toFixed(2)
-              );
-            }}
-            onChange={(value) => setPadjThreshold(value)}
-            value={padjThreshold}
-            data-testid="padj-threshold"
-            className="custom-slider"
-            ></Slider>
-          </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "80%",
+          }}
+        >
+          <div style={{ width: "45%", marginTop: 30 }}>
+            <H5 style={{}}>Thresholds</H5>
+            <div style={{ width: "100%", marginBottom: 20 }}>
+              <p style={{ marginBottom: 10 }}>padj Threshold</p>
+              <Slider
+                min={0.01}
+                max={0.09}
+                stepSize={0.01}
+                labelValues={[
+                  0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
+                ]}
+                labelRenderer={(value) => {
+                  return value === 0.01 || value === 0.05 ? (
+                    <strong>{value.toFixed(2)}</strong>
+                  ) : (
+                    value.toFixed(2)
+                  );
+                }}
+                onChange={(value) => setPadjThreshold(value)}
+                value={padjThreshold}
+                data-testid="padj-threshold"
+                className="custom-slider"
+              ></Slider>
+            </div>
 
-          <div style={{ width: '100%' }}>
-            <p style={{ marginBottom: 10 }}>Log2FC Threshold</p>
-            <Slider
-              min={0}
-              max={4}
-              stepSize={0.1}
-              labelStepSize={0.5}
-              onChange={(value) => setLog2FCThreshold(value)}
-              value={log2FCThreshold}
-              data-testid="log2fc-threshold"
-              className="custom-slider"
-            ></Slider>
+            <div style={{ width: "100%" }}>
+              <p style={{ marginBottom: 10 }}>Log2FC Threshold</p>
+              <Slider
+                min={0}
+                max={4}
+                stepSize={0.1}
+                labelStepSize={0.5}
+                onChange={(value) => setLog2FCThreshold(value)}
+                value={log2FCThreshold}
+                data-testid="log2fc-threshold"
+                className="custom-slider"
+              ></Slider>
+            </div>
+          </div>
+          <div style={{ width: "45%", marginTop: 30 }}>
+            <H5>Gene Label Selection</H5>
+            <div style={{ marginBottom: 20 }}>
+              <Suggest
+                items={suggestedGenes}
+                itemRenderer={(gene, { handleClick, modifiers }) => {
+                  return (
+                    <MenuItem key={gene} onClick={handleClick} text={gene} />
+                  );
+                }}
+                itemPredicate={filterGenes}
+                noResults={<MenuItem disabled={true} text="No results." />}
+                onItemSelect={(gene) => {
+                  handleGeneChange(gene);
+                  addGenesToList();
+                }}
+                inputValueRenderer={(gene) => gene}
+                inputProps={{ placeholder: "Enter Gene Name" }}
+                popoverProps={{ minimal: true }}
+                className="gene-input"
+              />
+              <Button
+                text="+"
+                onClick={addGenesToList}
+                className="add-button"
+              />
+              <Button
+                text="Clear Labels"
+                onClick={() => setGenesList([])}
+                className="clear-button"
+              />
+            </div>
+            <div className="genes-list">
+              {genesList.map((gene) => (
+                <Tag
+                  key={gene}
+                  onRemove={() => removeGeneFromList(gene)}
+                  className="gene-tag"
+                >
+                  {gene}
+                </Tag>
+              ))}
+            </div>
           </div>
         </div>
-        <div style={{ width: '45%', marginTop: 30 }}>
-          <H5>Gene Label Selection</H5>
-          <div style={{ marginBottom: 20 }}>
-            <Suggest
-              items={suggestedGenes}
-              itemRenderer={(gene, { handleClick, modifiers }) => {
-                return (
-                  <MenuItem key={gene} onClick={handleClick} text={gene} />
-                );
-              }}
-              itemPredicate={filterGenes}
-              noResults={<MenuItem disabled={true} text="No results." />}
-              onItemSelect={(gene) => {
-                handleGeneChange(gene);
-                addGenesToList();
-              }}
-              inputValueRenderer={(gene) => gene}
-              inputProps={{ placeholder: "Enter Gene Name" }}
-              popoverProps={{ minimal: true }}
-              className="gene-input"
-            />
-            <Button
-              text="+"
-              onClick={addGenesToList}
-              className="add-button"
-            />
-            <Button
-              text="Clear Labels"
-              onClick={() => setGenesList([])}
-              className="clear-button"
-            />
-          </div>
-          <div className="genes-list">
-            {genesList.map((gene) => (
-              <Tag
-                key={gene}
-                onRemove={() => removeGeneFromList(gene)}
-                className="gene-tag"
-              >
-                {gene}
-              </Tag>
-            ))}
-          </div>
-        </div>
-      </div>
       </form>
       {showChart && (
         <div>
