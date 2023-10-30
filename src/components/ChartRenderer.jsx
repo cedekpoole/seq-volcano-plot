@@ -35,10 +35,9 @@ function ChartRenderer({
     title: {
       text: `.`,
       style: {
-        color: "white",
+        color: "transparent",
       },
     },
-
     xAxis: {
       zIndex: 10,
       title: {
@@ -151,6 +150,7 @@ function ChartRenderer({
     // add a custom legend to show the number of
     // data points for each series
     legend: {
+      verticalAlign: "top",
       labelFormatter: function () {
         const series = this;
         const numPoints =

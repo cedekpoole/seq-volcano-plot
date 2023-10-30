@@ -198,69 +198,120 @@ function Chart() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} style={{ textAlign: "center" }}>
-        {/* add a file input to allow the user to upload a csv file */}
-        <div className="file-input" style={{ marginTop: 20 }}>
-          <FileInput
-            text={selectedFileName || "Choose a CSV file..."}
-            inputProps={{
-              accept: ".csv",
-              ref: fileInputRef,
-              required: true,
-            }}
-            onInputChange={handleFileChange}
-            data-testid="file-input"
-          />
-        </div>
-        <div className="threshold-sliders">
-          <div style={{ width: 500, margin: "0 30px" }}>
-            <H5 style={{ marginBottom: 10 }}>padj Threshold</H5>
-            <Slider
-              min={0.01}
-              max={0.09}
-              stepSize={0.01}
-              labelValues={[
-                0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
-              ]}
-              labelRenderer={(value) => {
-                return value === 0.01 || value === 0.05 ? (
-                  <strong>{value.toFixed(2)}</strong>
-                ) : (
-                  value.toFixed(2)
-                );
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginTop: 30,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          {/* add a file input to allow the user to upload a csv file */}
+          <div className="file-input" style={{ marginRight: 20 }}>
+            <FileInput
+              text={selectedFileName || "Choose a CSV file..."}
+              inputProps={{
+                accept: ".csv",
+                ref: fileInputRef,
+                required: true,
               }}
-              onChange={(value) => setPadjThreshold(value)}
-              value={padjThreshold}
-              data-testid="padj-threshold"
-              className="custom-slider"
-            ></Slider>
+              onInputChange={handleFileChange}
+              data-testid="file-input"
+            />
           </div>
-
-          <div style={{ width: 500, margin: "0 30px" }}>
-            <H5 style={{ marginBottom: 10 }}>Log2FC Threshold</H5>
-            <Slider
-              min={0}
-              max={4}
-              stepSize={0.1}
-              labelStepSize={0.5}
-              onChange={(value) => setLog2FCThreshold(value)}
-              value={log2FCThreshold}
-              data-testid="log2fc-threshold"
-              className="custom-slider"
-            ></Slider>
+          <Button
+            type="submit"
+            text="Load Data"
+            data-testid="submit-button"
+            style={{ fontSize: 16 }}
+          />
+          {showChart && (
+            <div style={{ display: "inline-block", marginLeft: 20 }}>
+            <Select
+              items={[
+                {
+                  text: "Download Up-Regulated Genes",
+                  action: () =>
+                    download(
+                      `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                      upRegulatedCsvData
+                    ),
+                },
+                {
+                  text: "Download Down-Regulated Genes",
+                  action: () =>
+                    download(
+                      `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                      downRegulatedCsvData
+                    ),
+                },
+              ]}
+              itemRenderer={renderDownloadOptions}
+              filterable={false}
+              onItemSelect={() => {}}
+            >
+              <Button text="Download" rightIcon="caret-down" />
+            </Select>
           </div>
+          )}
         </div>
-        <Button
-          type="submit"
-          text="Load Data"
-          large
-          data-testid="submit-button"
-          style={{ marginBottom: 30, fontSize: 16 }}
-        />
-      </form>
-      {showChart && (
-        <div>
-          <div style={{ marginLeft: "15%" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "80%",
+          }}
+        >
+          <div style={{ width: "45%", marginTop: 30 }}>
+            <H5 style={{}}>Thresholds</H5>
+            <div style={{ width: "100%", marginBottom: 20 }}>
+              <p style={{ marginBottom: 10 }}>padj Threshold</p>
+              <Slider
+                min={0.01}
+                max={0.09}
+                stepSize={0.01}
+                labelValues={[
+                  0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
+                ]}
+                labelRenderer={(value) => {
+                  return value === 0.01 || value === 0.05 ? (
+                    <strong>{value.toFixed(2)}</strong>
+                  ) : (
+                    value.toFixed(2)
+                  );
+                }}
+                onChange={(value) => setPadjThreshold(value)}
+                value={padjThreshold}
+                data-testid="padj-threshold"
+                className="custom-slider"
+              ></Slider>
+            </div>
+
+            <div style={{ width: "100%" }}>
+              <p style={{ marginBottom: 10 }}>Log2FC Threshold</p>
+              <Slider
+                min={0}
+                max={4}
+                stepSize={0.1}
+                labelStepSize={0.5}
+                onChange={(value) => setLog2FCThreshold(value)}
+                value={log2FCThreshold}
+                data-testid="log2fc-threshold"
+                className="custom-slider"
+              ></Slider>
+            </div>
+          </div>
+          <div style={{ width: "45%", marginTop: 30 }}>
+            <H5>Gene Label Selection</H5>
             <div style={{ marginBottom: 20 }}>
               <Suggest
                 items={suggestedGenes}
@@ -287,13 +338,10 @@ function Chart() {
               />
               <Button
                 text="Clear Labels"
-                onClick={() => {
-                  setGenesList([]);
-                }}
+                onClick={() => setGenesList([])}
                 className="clear-button"
               />
             </div>
-
             <div className="genes-list">
               {genesList.map((gene) => (
                 <Tag
@@ -306,6 +354,10 @@ function Chart() {
               ))}
             </div>
           </div>
+        </div>
+      </form>
+      {showChart && (
+        <div>
           <ChartRenderer
             upRegulatedGenes={upRegulatedGenes}
             downRegulatedGenes={downRegulatedGenes}
@@ -320,35 +372,6 @@ function Chart() {
             genesList={genesList}
             setGenesList={setGenesList}
           />
-          <div style={{ textAlign: "center", margin: "10px 0 30px 0" }}>
-            <div style={{ display: "inline-block" }}>
-              <Select
-                items={[
-                  {
-                    text: "Download Up-Regulated Genes",
-                    action: () =>
-                      download(
-                        `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
-                        upRegulatedCsvData
-                      ),
-                  },
-                  {
-                    text: "Download Down-Regulated Genes",
-                    action: () =>
-                      download(
-                        `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
-                        downRegulatedCsvData
-                      ),
-                  },
-                ]}
-                itemRenderer={renderDownloadOptions}
-                filterable={false}
-                onItemSelect={() => {}}
-              >
-                <Button text="Download" rightIcon="caret-down" />
-              </Select>
-            </div>
-          </div>
         </div>
       )}
     </div>
