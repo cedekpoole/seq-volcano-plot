@@ -231,7 +231,7 @@ function Chart() {
             type="submit"
             text="Load Data"
             data-testid="submit-button"
-            style={{ fontSize: 16 }}
+            style={{ fontWeight: "bold" }}
           />
           {showChart && (
             <div style={{ display: "inline-block", marginLeft: 20 }}>
@@ -271,8 +271,8 @@ function Chart() {
             width: "80%",
           }}
         >
-          <div style={{ width: "45%", marginTop: 30 }}>
-            <H5 style={{}}>Thresholds</H5>
+          <div style={{ width: "45%", marginTop: 65 }}>
+            <H5>Thresholds</H5>
             <div style={{ width: "100%", marginBottom: 20 }}>
               <p style={{ marginBottom: 10 }}>padj Threshold</p>
               <Slider
@@ -310,7 +310,7 @@ function Chart() {
               ></Slider>
             </div>
           </div>
-          <div style={{ width: "45%", marginTop: 30 }}>
+          <div style={{ width: "45%", marginTop: 65 }}>
             <H5>Gene Label Selection</H5>
             <div style={{ marginBottom: 20 }}>
               <Suggest
