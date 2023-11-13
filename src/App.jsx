@@ -1,9 +1,9 @@
-import Chart from "./components/Chart";
+import UserInput from "./components/UserInput";
 
 function App() {
   return (
     <div>
-      <Chart />
+      <UserInput />
     </div>
   );
 }
