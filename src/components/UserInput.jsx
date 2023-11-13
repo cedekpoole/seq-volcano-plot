@@ -138,12 +138,6 @@ function Chart() {
     setPlotLines(newPlotLines);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    parseData(parsedCsvData);
-    setShowChart(true);
-  };
-
   const handleFileChange = (e) => {
     setShowChart(false);
     setSelectedFileName("");
@@ -202,115 +196,77 @@ function Chart() {
 
   return (
     <div>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: 30,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
+      <form className="flex justify-between">
+        <div className="w-1/2 p-4 mt-10">
           {/* add a file input to allow the user to upload a csv file */}
-          <div className="file-input mr-5">
-            <FileInput
-              text={selectedFileName || "Choose a CSV file..."}
-              inputProps={{
-                accept: ".csv",
-                ref: fileInputRef,
-                required: true,
-              }}
-              onInputChange={handleFileChange}
-              data-testid="file-input"
-            />
-          </div>
-          {showChart && (
-            <div className="inline-block ml-5">
-              <Select
-                items={[
-                  {
-                    text: "Download Up-Regulated Genes",
-                    action: () =>
-                      download(
-                        `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
-                        upRegulatedCsvData
-                      ),
-                  },
-                  {
-                    text: "Download Down-Regulated Genes",
-                    action: () =>
-                      download(
-                        `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
-                        downRegulatedCsvData
-                      ),
-                  },
-                ]}
-                itemRenderer={renderDownloadOptions}
-                filterable={false}
-                onItemSelect={() => {}}
-              >
-                <Button text="Download" rightIcon="caret-down" />
-              </Select>
-            </div>
-          )}
-        </div>
-        <div className="flex flex-row justify-between w-4/5">
-          <div className="w-[45%] mt-16">
-            <H5>Thresholds</H5>
-            <div className="w-full mb-4">
-              <p className="mb-2.5">padj Threshold</p>
-              <Slider
-                min={0.01}
-                max={0.09}
-                stepSize={0.01}
-                labelValues={[
-                  0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
-                ]}
-                labelRenderer={(value) => {
-                  return value === 0.01 || value === 0.05 ? (
-                    <strong>{value.toFixed(2)}</strong>
-                  ) : (
-                    value.toFixed(2)
-                  );
+          <div className="grid sm:grid-cols-12 grid-cols-1 gap-4 items-center mb-5">
+            {/* Upload Section */}
+            <label htmlFor="dataFile" className="sm:text-right sm:col-span-3">
+              Upload your data file
+            </label>
+            <div className="sm:col-span-6 col-span-1 flex items-center">
+              <FileInput
+                text={selectedFileName || "Choose a CSV file..."}
+                inputProps={{
+                  id: "dataFile",
+                  accept: ".csv",
+                  ref: fileInputRef,
+                  required: true,
                 }}
-                onChange={(value) => setPadjThreshold(value)}
-                value={padjThreshold}
-                data-testid="padj-threshold"
-                className="custom-slider"
-              ></Slider>
+                onInputChange={handleFileChange}
+                data-testid="file-input"
+                className="flex-grow"
+              />
+            </div>
+            <div className="sm:col-span-3 col-span-1 flex justify-start items-center">
+              {showChart && (
+                <Select
+                  items={[
+                    {
+                      text: "Download Up-Regulated Genes",
+                      action: () =>
+                        download(
+                          `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                          upRegulatedCsvData
+                        ),
+                    },
+                    {
+                      text: "Download Down-Regulated Genes",
+                      action: () =>
+                        download(
+                          `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                          downRegulatedCsvData
+                        ),
+                    },
+                  ]}
+                  itemRenderer={renderDownloadOptions}
+                  filterable={false}
+                  onItemSelect={() => {}}
+                >
+                  <Button
+                    icon="download"
+                    rightIcon="caret-down"
+                    className="text-xs rounded"
+                  />
+                </Select>
+              )}
+              {!showChart && <div></div>}{" "}
+              {/* Ensures alignment when no chart is shown */}
             </div>
 
-            <div className="w-full">
-              <p className="mb-2.5">Log2FC Threshold</p>
-              <Slider
-                min={0}
-                max={4}
-                stepSize={0.1}
-                labelStepSize={0.5}
-                onChange={(value) => setLog2FCThreshold(value)}
-                value={log2FCThreshold}
-                data-testid="log2fc-threshold"
-                className="custom-slider"
-              ></Slider>
-            </div>
-          </div>
-          <div className="w-[45%] mt-16">
-            <H5>Gene Label Selection</H5>
-            <div className="mb-4">
+            {/* Gene Label Section */}
+            <label
+              htmlFor="geneInput"
+              className="sm:text-right sm:col-span-3 mt-2"
+            >
+              Gene Label Selection
+            </label>
+            <div className="sm:col-span-4 col-span-1 flex items-center mt-2">
               <Suggest
                 items={suggestedGenes}
-                itemRenderer={(gene, { handleClick, modifiers }) => {
-                  return (
-                    <MenuItem key={gene} onClick={handleClick} text={gene} />
-                  );
-                }}
+                itemRenderer={(gene, { handleClick, modifiers }) => (
+                  <MenuItem key={gene} onClick={handleClick} text={gene} />
+                )}
                 itemPredicate={filterGenes}
                 noResults={<MenuItem disabled={true} text="No results." />}
                 onItemSelect={(gene) => {
@@ -318,28 +274,78 @@ function Chart() {
                   addGenesToList();
                 }}
                 inputValueRenderer={(gene) => gene}
-                inputProps={{ placeholder: "Enter Gene Name" }}
+                inputProps={{
+                  placeholder: "Enter Gene Name",
+                  id: "geneInput",
+                  rightElement: (
+                    <Button
+                      icon="plus"
+                      minimal={true}
+                      onClick={addGenesToList}
+                    />
+                  ),
+                  className: "flex-grow",
+                }}
                 popoverProps={{ minimal: true }}
-                className="p-1 w-[200px] text-sm rounded inline-block"
               />
-              <Button text="+" onClick={addGenesToList} />
+            </div>
+            <div className="sm:col-span-5 col-span-1 flex justify-start items-center mt-2">
               <Button
-                text="Clear Labels"
+                text="Clear"
                 onClick={() => setGenesList([])}
-                className="text-sm ml-10"
+                rightIcon="cross"
+                className="text-xs rounded"
               />
             </div>
-            <div className="my-2.5 mx-0 min-h-[50px]">
-              {genesList.map((gene) => (
-                <Tag
-                  key={gene}
-                  onRemove={() => removeGeneFromList(gene)}
-                  className="m1 text-sm bg-primary-100"
-                >
-                  {gene}
-                </Tag>
-              ))}
-            </div>
+          </div>
+          <div className="my-2.5 mx-20 min-h-[50px] border-t pt-3">
+            {genesList.map((gene) => (
+              <Tag
+                key={gene}
+                onRemove={() => removeGeneFromList(gene)}
+                className="m-1 text-sm bg-primary-100"
+              >
+                {gene}
+              </Tag>
+            ))}
+          </div>
+        </div>
+        <div className="w-[45%] p-4 mr-10 mt-8">
+          <div className="w-full mb-4 px-3">
+            <p className="mb-2.5">padj Threshold</p>
+            <Slider
+              min={0.01}
+              max={0.09}
+              stepSize={0.01}
+              labelValues={[
+                0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
+              ]}
+              labelRenderer={(value) => {
+                return value === 0.01 || value === 0.05 ? (
+                  <strong>{value.toFixed(2)}</strong>
+                ) : (
+                  value.toFixed(2)
+                );
+              }}
+              onChange={(value) => setPadjThreshold(value)}
+              value={padjThreshold}
+              data-testid="padj-threshold"
+              className="custom-slider"
+            ></Slider>
+          </div>
+
+          <div className="w-full px-3">
+            <p className="mb-2.5">Log2FC Threshold</p>
+            <Slider
+              min={0}
+              max={4}
+              stepSize={0.1}
+              labelStepSize={0.5}
+              onChange={(value) => setLog2FCThreshold(value)}
+              value={log2FCThreshold}
+              data-testid="log2fc-threshold"
+              className="custom-slider"
+            ></Slider>
           </div>
         </div>
       </form>
