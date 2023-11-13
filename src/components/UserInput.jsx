@@ -150,7 +150,11 @@ function Chart() {
     const file = e.target.files[0];
     if (file) {
       setSelectedFileName(file.name);
-      parseCSVData(fileInputRef, setParsedCsvData);
+      parseCSVData(fileInputRef, (csvData) => {
+        setParsedCsvData(csvData);
+        parseData(csvData);
+        setShowChart(true);
+      });
     }
   };
 
@@ -215,7 +219,7 @@ function Chart() {
           }}
         >
           {/* add a file input to allow the user to upload a csv file */}
-          <div className="file-input" style={{ marginRight: 20 }}>
+          <div className="file-input mr-5">
             <FileInput
               text={selectedFileName || "Choose a CSV file..."}
               inputProps={{
@@ -227,54 +231,41 @@ function Chart() {
               data-testid="file-input"
             />
           </div>
-          <Button
-            type="submit"
-            text="Load Data"
-            data-testid="submit-button"
-            style={{ fontWeight: "bold" }}
-          />
           {showChart && (
-            <div style={{ display: "inline-block", marginLeft: 20 }}>
-            <Select
-              items={[
-                {
-                  text: "Download Up-Regulated Genes",
-                  action: () =>
-                    download(
-                      `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
-                      upRegulatedCsvData
-                    ),
-                },
-                {
-                  text: "Download Down-Regulated Genes",
-                  action: () =>
-                    download(
-                      `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
-                      downRegulatedCsvData
-                    ),
-                },
-              ]}
-              itemRenderer={renderDownloadOptions}
-              filterable={false}
-              onItemSelect={() => {}}
-            >
-              <Button text="Download" rightIcon="caret-down" />
-            </Select>
-          </div>
+            <div className="inline-block ml-5">
+              <Select
+                items={[
+                  {
+                    text: "Download Up-Regulated Genes",
+                    action: () =>
+                      download(
+                        `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                        upRegulatedCsvData
+                      ),
+                  },
+                  {
+                    text: "Download Down-Regulated Genes",
+                    action: () =>
+                      download(
+                        `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                        downRegulatedCsvData
+                      ),
+                  },
+                ]}
+                itemRenderer={renderDownloadOptions}
+                filterable={false}
+                onItemSelect={() => {}}
+              >
+                <Button text="Download" rightIcon="caret-down" />
+              </Select>
+            </div>
           )}
         </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            width: "80%",
-          }}
-        >
-          <div style={{ width: "45%", marginTop: 65 }}>
+        <div className="flex flex-row justify-between w-4/5">
+          <div className="w-[45%] mt-16">
             <H5>Thresholds</H5>
-            <div style={{ width: "100%", marginBottom: 20 }}>
-              <p style={{ marginBottom: 10 }}>padj Threshold</p>
+            <div className="w-full mb-4">
+              <p className="mb-2.5">padj Threshold</p>
               <Slider
                 min={0.01}
                 max={0.09}
@@ -296,8 +287,8 @@ function Chart() {
               ></Slider>
             </div>
 
-            <div style={{ width: "100%" }}>
-              <p style={{ marginBottom: 10 }}>Log2FC Threshold</p>
+            <div className="w-full">
+              <p className="mb-2.5">Log2FC Threshold</p>
               <Slider
                 min={0}
                 max={4}
@@ -310,9 +301,9 @@ function Chart() {
               ></Slider>
             </div>
           </div>
-          <div style={{ width: "45%", marginTop: 65 }}>
+          <div className="w-[45%] mt-16">
             <H5>Gene Label Selection</H5>
-            <div style={{ marginBottom: 20 }}>
+            <div className="mb-4">
               <Suggest
                 items={suggestedGenes}
                 itemRenderer={(gene, { handleClick, modifiers }) => {
@@ -329,25 +320,21 @@ function Chart() {
                 inputValueRenderer={(gene) => gene}
                 inputProps={{ placeholder: "Enter Gene Name" }}
                 popoverProps={{ minimal: true }}
-                className="gene-input"
+                className="p-1 w-[200px] text-sm rounded inline-block"
               />
-              <Button
-                text="+"
-                onClick={addGenesToList}
-                className="add-button"
-              />
+              <Button text="+" onClick={addGenesToList} />
               <Button
                 text="Clear Labels"
                 onClick={() => setGenesList([])}
-                className="clear-button"
+                className="text-sm ml-10"
               />
             </div>
-            <div className="genes-list">
+            <div className="my-2.5 mx-0 min-h-[50px]">
               {genesList.map((gene) => (
                 <Tag
                   key={gene}
                   onRemove={() => removeGeneFromList(gene)}
-                  className="gene-tag"
+                  className="m1 text-sm bg-primary-100"
                 >
                   {gene}
                 </Tag>

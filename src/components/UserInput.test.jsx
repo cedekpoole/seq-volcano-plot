@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Chart from "./Chart";
+import Chart from "./UserInput";
 
 describe("Chart component", () => {
   it("should not render the chart initially", () => {
@@ -35,10 +35,6 @@ describe("Chart component", () => {
       fireEvent.change(slider1, { target: { value: 0.03 } });
       fireEvent.change(slider2, { target: { value: 1 } });
     });
-
-    // Simulate pressing the submit button
-    const submitButton = screen.getByTestId("submit-button"); // Use a suitable data-testid attribute
-    fireEvent.click(submitButton);
 
     waitFor(() => {
       const chart = screen.getByTestId("chart");
