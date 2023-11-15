@@ -30,7 +30,7 @@ function ChartRenderer({
     chart: {
       type: "scatter",
       zoomType: "xy",
-      height: "60%",
+      height: "700px",
     },
     title: {
       text: `.`,
@@ -168,11 +168,7 @@ function ChartRenderer({
   };
 
   return (
-    <div
-      className="chart"
-      style={{ width: "80%", margin: "0 auto", paddingRight: 10 }}
-      data-testid="chart"
-    >
+    <div className="chart md:w-4/5 mx-auto pr-2.5" data-testid="chart">
       <HighChartsReact highcharts={HighCharts} options={options} />
     </div>
   );
