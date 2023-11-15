@@ -4,14 +4,7 @@ import HC_exporting from "highcharts/modules/exporting";
 import highchartsAccessibility from "highcharts/modules/accessibility";
 import HighChartsBoost from "highcharts/modules/boost";
 import { useState, useRef, useEffect } from "react";
-import {
-  Slider,
-  H5,
-  Button,
-  FileInput,
-  MenuItem,
-  Tag,
-} from "@blueprintjs/core";
+import { Slider, Button, FileInput, MenuItem, Tag } from "@blueprintjs/core";
 import { Suggest, Select } from "@blueprintjs/select";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import ChartRenderer from "./ChartRenderer";
@@ -196,15 +189,15 @@ function Chart() {
 
   return (
     <div>
-      <form className="flex justify-between">
-        <div className="w-1/2 p-4 mt-10">
+      <form className="flex flex-col md:flex-row justify-between">
+        <div className="md:w-1/2 p-4 mt-10">
           {/* add a file input to allow the user to upload a csv file */}
-          <div className="grid sm:grid-cols-12 grid-cols-1 gap-4 items-center mb-5">
+          <div className="grid lg:grid-cols-12 grid-cols-1 gap-4 items-center mb-5 lg:ml-20">
             {/* Upload Section */}
-            <label htmlFor="dataFile" className="sm:text-right sm:col-span-3">
+            <label htmlFor="dataFile" className="lg:text-right col-span-4">
               Upload your data file
             </label>
-            <div className="sm:col-span-6 col-span-1 flex items-center">
+            <div className="lg:col-span-6 col-span-1 flex items-center">
               <FileInput
                 text={selectedFileName || "Choose a CSV file..."}
                 inputProps={{
@@ -215,10 +208,10 @@ function Chart() {
                 }}
                 onInputChange={handleFileChange}
                 data-testid="file-input"
-                className="flex-grow"
+                className="flex-grow min-w-0"
               />
             </div>
-            <div className="sm:col-span-3 col-span-1 flex justify-start items-center">
+            <div className="lg:col-span-2 col-span-1 flex justify-start lg:items-center">
               {showChart && (
                 <Select
                   items={[
@@ -250,18 +243,17 @@ function Chart() {
                   />
                 </Select>
               )}
-              {!showChart && <div></div>}{" "}
-              {/* Ensures alignment when no chart is shown */}
+
             </div>
 
             {/* Gene Label Section */}
             <label
               htmlFor="geneInput"
-              className="sm:text-right sm:col-span-3 mt-2"
+              className="lg:text-right col-span-4"
             >
               Gene Label Selection
             </label>
-            <div className="sm:col-span-4 col-span-1 flex items-center mt-2">
+            <div className="lg:col-span-6 col-span-1">
               <Suggest
                 items={suggestedGenes}
                 itemRenderer={(gene, { handleClick, modifiers }) => (
@@ -289,16 +281,15 @@ function Chart() {
                 popoverProps={{ minimal: true }}
               />
             </div>
-            <div className="sm:col-span-5 col-span-1 flex justify-start items-center mt-2">
+            <div className="lg:col-span-2 col-span-1 flex justify-start items-center">
               <Button
-                text="Clear"
                 onClick={() => setGenesList([])}
-                rightIcon="cross"
+                icon="trash"
                 className="text-xs rounded"
               />
             </div>
           </div>
-          <div className="my-2.5 mx-20 min-h-[50px] border-t pt-3">
+          <div className="my-2.5 md:ml-24 md:mr-4 min-h-[80px] border-t pt-3">
             {genesList.map((gene) => (
               <Tag
                 key={gene}
@@ -310,7 +301,7 @@ function Chart() {
             ))}
           </div>
         </div>
-        <div className="w-[45%] p-4 mr-10 mt-8">
+        <div className="lg:w-[40%] sm:w-2/3 md:w-1/2 w-full p-4 mx-auto mt-10">
           <div className="w-full mb-4 px-3">
             <p className="mb-2.5">padj Threshold</p>
             <Slider
