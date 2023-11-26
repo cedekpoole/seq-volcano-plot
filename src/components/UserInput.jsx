@@ -15,7 +15,7 @@ highchartsAccessibility(HighCharts);
 HC_exporting(HighCharts);
 HighChartsBoost(HighCharts);
 
-function Chart() {
+function UserInput() {
   // States for managing chart data and visibility
   const [showChart, setShowChart] = useState(false);
   const [upRegulatedGenes, setUpRegulatedGenes] = useState([]);
@@ -282,11 +282,13 @@ function Chart() {
               />
             </div>
             <div className="lg:col-span-2 col-span-1 flex justify-start items-center">
+              {genesList.length > 0 && (
               <Button
                 onClick={() => setGenesList([])}
                 icon="trash"
                 className="text-xs rounded"
               />
+              )}
             </div>
           </div>
           <div className="my-2.5 md:ml-24 md:mr-4 min-h-[80px] border-t pt-3">
@@ -364,4 +366,4 @@ function Chart() {
 
 console.warn = () => {};
 
-export default Chart;
+export default UserInput;
