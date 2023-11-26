@@ -1,8 +1,23 @@
 {
   "name": "volcano-plot",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "main": "dist/volcano-plot.js",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cedekpoole/seq-volcano-plot"
+  },
+  "keywords": [
+    "react",
+    "highcharts",
+    "data-visualization",
+    "volcano-plot",
+    "genomics"
+  ],
+  "author": "cedekpoole",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -26,9 +41,7 @@
     "file-saver": "^2.0.5",
     "highcharts": "^11.1.0",
     "highcharts-react-official": "^3.2.1",
-    "papaparse": "^5.4.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "papaparse": "^5.4.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.23.2",
@@ -48,6 +61,12 @@
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
