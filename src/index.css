@@ -16,11 +16,11 @@
 }
 
 
-.bp5-file-upload-input {
+.file-input>.bp5-file-upload-input {
   border-radius: 3px !important;
 }
 
-.bp5-file-upload-input::after {
+.file-input>.bp5-file-upload-input::after {
   background-color: rgb(60, 89, 193) !important;
   color: rgb(255, 255, 255) !important;
   border-radius: 3px !important;
@@ -29,7 +29,7 @@
   border: 0.5px solid #5E9BED !important;
 }
 
-.bp5-file-upload-input:hover::after {
+.file-input>.bp5-file-upload-input:hover::after {
   background-color: rgba(60, 89, 193, 0.9) !important;
 }
 

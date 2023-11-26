@@ -189,15 +189,15 @@ function UserInput() {
 
   return (
     <div>
-      <form className="flex flex-col md:flex-row justify-between">
-        <div className="md:w-1/2 p-4 mt-10">
+      <form className="vol-flex vol-flex-col md:vol-flex-row vol-justify-between">
+        <div className="md:vol-w-1/2 vol-p-4 vol-mt-10">
           {/* add a file input to allow the user to upload a csv file */}
-          <div className="grid lg:grid-cols-12 grid-cols-1 gap-4 items-center mb-5 lg:ml-20">
+          <div className="vol-grid lg:vol-grid-cols-12 vol-grid-cols-1 vol-gap-4 vol-items-center vol-mb-5 vol-lg:ml-20">
             {/* Upload Section */}
-            <label htmlFor="dataFile" className="lg:text-right col-span-4">
+            <label htmlFor="dataFile" className="lg:vol-text-right vol-col-span-4">
               Upload your data file
             </label>
-            <div className="lg:col-span-6 col-span-1 flex items-center">
+            <div className="lg:vol-col-span-6 vol-col-span-1 vol-flex vol-items-center">
               <FileInput
                 text={selectedFileName || "Choose a CSV file..."}
                 inputProps={{
@@ -208,10 +208,10 @@ function UserInput() {
                 }}
                 onInputChange={handleFileChange}
                 data-testid="file-input"
-                className="flex-grow min-w-0"
+                className="vol-flex-grow vol-min-w-0 file-input"
               />
             </div>
-            <div className="lg:col-span-2 col-span-1 flex justify-start lg:items-center">
+            <div className="lg:vol-col-span-2 vol-col-span-1 vol-flex vol-justify-start lg:vol-items-center">
               {showChart && (
                 <Select
                   items={[
@@ -239,7 +239,7 @@ function UserInput() {
                   <Button
                     icon="download"
                     rightIcon="caret-down"
-                    className="text-xs rounded"
+                    className="vol-text-xs vol-rounded"
                   />
                 </Select>
               )}
@@ -249,11 +249,11 @@ function UserInput() {
             {/* Gene Label Section */}
             <label
               htmlFor="geneInput"
-              className="lg:text-right col-span-4"
+              className="lg:vol-text-right vol-col-span-4"
             >
               Gene Label Selection
             </label>
-            <div className="lg:col-span-6 col-span-1">
+            <div className="lg:vol-col-span-6 vol-col-span-1">
               <Suggest
                 items={suggestedGenes}
                 itemRenderer={(gene, { handleClick, modifiers }) => (
@@ -276,36 +276,36 @@ function UserInput() {
                       onClick={addGenesToList}
                     />
                   ),
-                  className: "flex-grow",
+                  className: "vol-flex-grow",
                 }}
                 popoverProps={{ minimal: true }}
               />
             </div>
-            <div className="lg:col-span-2 col-span-1 flex justify-start items-center">
+            <div className="lg:vol-col-span-2 vol-col-span-1 vol-flex vol-justify-start vol-items-center">
               {genesList.length > 0 && (
               <Button
                 onClick={() => setGenesList([])}
                 icon="trash"
-                className="text-xs rounded"
+                className="vol-text-xs vol-rounded"
               />
               )}
             </div>
           </div>
-          <div className="my-2.5 md:ml-24 md:mr-4 min-h-[80px] border-t pt-3">
+          <div className="vol-my-2.5 md:vol-ml-24 md:vol-mr-4 vol-min-h-[80px] vol-border-t vol-pt-3">
             {genesList.map((gene) => (
               <Tag
                 key={gene}
                 onRemove={() => removeGeneFromList(gene)}
-                className="m-1 text-sm bg-primary-100"
+                className="vol-m-1 vol-text-sm vol-bg-primary-100"
               >
                 {gene}
               </Tag>
             ))}
           </div>
         </div>
-        <div className="lg:w-[40%] sm:w-2/3 md:w-1/2 w-full p-4 mx-auto mt-10">
-          <div className="w-full mb-4 px-3">
-            <p className="mb-2.5">padj Threshold</p>
+        <div className="lg:vol-w-[40%] sm:vol-w-2/3 md:vol-w-1/2 vol-w-full vol-p-4 vol-mx-auto vol-mt-10">
+          <div className="vol-w-full vol-mb-4 vol-px-3">
+            <p className="vol-mb-2.5">padj Threshold</p>
             <Slider
               min={0.01}
               max={0.09}
@@ -327,8 +327,8 @@ function UserInput() {
             ></Slider>
           </div>
 
-          <div className="w-full px-3">
-            <p className="mb-2.5">Log2FC Threshold</p>
+          <div className="vol-w-full vol-px-3">
+            <p className="vol-mb-2.5">Log2FC Threshold</p>
             <Slider
               min={0}
               max={4}

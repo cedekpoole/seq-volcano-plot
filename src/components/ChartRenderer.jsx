@@ -168,7 +168,7 @@ function ChartRenderer({
   };
 
   return (
-    <div className="chart md:w-4/5 mx-auto pr-2.5" data-testid="chart">
+    <div className="chart md:vol-w-4/5 vol-mx-auto vol-pr-2.5" data-testid="chart">
       <HighChartsReact highcharts={HighCharts} options={options} />
     </div>
   );
