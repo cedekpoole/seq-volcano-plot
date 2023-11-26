@@ -1,10 +1,11 @@
 import UserInput from "./components/UserInput";
+import "./index.css"
 
 function App() {
   return (
-    <div>
+    <>
       <UserInput />
-    </div>
+    </>
   );
 }
 
