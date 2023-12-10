@@ -188,162 +188,166 @@ function UserInput() {
   };
 
   return (
-    <div>
-      <form className="vol-flex vol-flex-col md:vol-flex-row vol-justify-between">
-        <div className="md:vol-w-1/2 vol-p-4 vol-mt-10">
-          {/* add a file input to allow the user to upload a csv file */}
-          <div className="vol-grid lg:vol-grid-cols-12 vol-grid-cols-1 vol-gap-4 vol-items-center vol-mb-5 vol-lg:ml-20">
-            {/* Upload Section */}
-            <label htmlFor="dataFile" className="lg:vol-text-right vol-col-span-4">
-              Upload your data file
-            </label>
-            <div className="lg:vol-col-span-6 vol-col-span-1 vol-flex vol-items-center">
-              <FileInput
-                text={selectedFileName || "Choose a CSV file..."}
-                inputProps={{
-                  id: "dataFile",
-                  accept: ".csv",
-                  ref: fileInputRef,
-                  required: true,
-                }}
-                onInputChange={handleFileChange}
-                data-testid="file-input"
-                className="vol-flex-grow vol-min-w-0 file-input"
-              />
-            </div>
-            <div className="lg:vol-col-span-2 vol-col-span-1 vol-flex vol-justify-start lg:vol-items-center">
-              {showChart && (
-                <Select
-                  items={[
-                    {
-                      text: "Download Up-Regulated Genes",
-                      action: () =>
-                        download(
-                          `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
-                          upRegulatedCsvData
-                        ),
-                    },
-                    {
-                      text: "Download Down-Regulated Genes",
-                      action: () =>
-                        download(
-                          `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
-                          downRegulatedCsvData
-                        ),
-                    },
-                  ]}
-                  itemRenderer={renderDownloadOptions}
-                  filterable={false}
-                  onItemSelect={() => {}}
-                >
+    <div className="lg:vol-flex">
+      <div className="vol-sidebar lg:vol-w-1/4 lg:vol-bg-gray-50 lg:vol-shadow-md lg:vol-min-h-screen">
+        <form className="vol-flex vol-flex-col md:vol-flex-row lg:vol-flex-col lg:vol-justify-between">
+          <div className="md:vol-w-1/2 vol-p-4 vol-mt-10 lg:vol-w-full">
+            {/* add a file input to allow the user to upload a csv file */}
+            <div className="vol-grid md:vol-grid-cols-12 lg:vol-grid-cols-1 vol-grid-cols-1 vol-gap-4 vol-items-center vol-mb-5">
+              {/* Upload Section */}
+              <label
+                htmlFor="dataFile"
+                className="md:vol-text-right lg:vol-text-left vol-col-span-4"
+              >
+                Upload your data file
+              </label>
+              <div className="md:vol-col-span-6 vol-col-span-1 lg:vol-col-span-2 vol-flex vol-items-center">
+                <FileInput
+                  text={selectedFileName || "Choose a CSV file..."}
+                  inputProps={{
+                    id: "dataFile",
+                    accept: ".csv",
+                    ref: fileInputRef,
+                    required: true,
+                  }}
+                  onInputChange={handleFileChange}
+                  data-testid="file-input"
+                  className="vol-flex-grow vol-min-w-0 file-input"
+                />
+              </div>
+              <div className="md:vol-col-span-2 lg:vol-col-span-1 vol-col-span-1 vol-flex vol-justify-start md:vol-items-center">
+                {showChart && (
+                  <Select
+                    items={[
+                      {
+                        text: "Download Up-Regulated Genes",
+                        action: () =>
+                          download(
+                            `upReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                            upRegulatedCsvData
+                          ),
+                      },
+                      {
+                        text: "Download Down-Regulated Genes",
+                        action: () =>
+                          download(
+                            `downReg_log2FC${log2FCThreshold}_padj${padjThreshold}.csv`,
+                            downRegulatedCsvData
+                          ),
+                      },
+                    ]}
+                    itemRenderer={renderDownloadOptions}
+                    filterable={false}
+                    onItemSelect={() => {}}
+                  >
+                    <Button
+                      icon="download"
+                      rightIcon="caret-down"
+                      className="vol-text-xs vol-rounded"
+                    />
+                  </Select>
+                )}
+              </div>
+
+              {/* Gene Label Section */}
+              <label
+                htmlFor="geneInput"
+                className="md:vol-text-right lg:vol-text-left vol-col-span-4"
+              >
+                Gene Label Selection
+              </label>
+              <div className="md:vol-col-span-6 vol-col-span-1 lg:vol-col-span-2">
+                <Suggest
+                  items={suggestedGenes}
+                  itemRenderer={(gene, { handleClick, modifiers }) => (
+                    <MenuItem key={gene} onClick={handleClick} text={gene} />
+                  )}
+                  itemPredicate={filterGenes}
+                  noResults={<MenuItem disabled={true} text="No results." />}
+                  onItemSelect={(gene) => {
+                    handleGeneChange(gene);
+                    addGenesToList();
+                  }}
+                  inputValueRenderer={(gene) => gene}
+                  inputProps={{
+                    placeholder: "Enter Gene Name",
+                    id: "geneInput",
+                    rightElement: (
+                      <Button
+                        icon="plus"
+                        minimal={true}
+                        onClick={addGenesToList}
+                      />
+                    ),
+                    className: "vol-flex-grow",
+                  }}
+                  popoverProps={{ minimal: true }}
+                />
+              </div>
+              <div className="md:vol-col-span-2 vol-col-span-1 lg:vol-col-span-1 vol-flex vol-justify-start vol-items-center">
+                {genesList.length > 0 && (
                   <Button
-                    icon="download"
-                    rightIcon="caret-down"
+                    onClick={() => setGenesList([])}
+                    icon="trash"
                     className="vol-text-xs vol-rounded"
                   />
-                </Select>
-              )}
-
-            </div>
-
-            {/* Gene Label Section */}
-            <label
-              htmlFor="geneInput"
-              className="lg:vol-text-right vol-col-span-4"
-            >
-              Gene Label Selection
-            </label>
-            <div className="lg:vol-col-span-6 vol-col-span-1">
-              <Suggest
-                items={suggestedGenes}
-                itemRenderer={(gene, { handleClick, modifiers }) => (
-                  <MenuItem key={gene} onClick={handleClick} text={gene} />
                 )}
-                itemPredicate={filterGenes}
-                noResults={<MenuItem disabled={true} text="No results." />}
-                onItemSelect={(gene) => {
-                  handleGeneChange(gene);
-                  addGenesToList();
-                }}
-                inputValueRenderer={(gene) => gene}
-                inputProps={{
-                  placeholder: "Enter Gene Name",
-                  id: "geneInput",
-                  rightElement: (
-                    <Button
-                      icon="plus"
-                      minimal={true}
-                      onClick={addGenesToList}
-                    />
-                  ),
-                  className: "vol-flex-grow",
-                }}
-                popoverProps={{ minimal: true }}
-              />
+              </div>
             </div>
-            <div className="lg:vol-col-span-2 vol-col-span-1 vol-flex vol-justify-start vol-items-center">
-              {genesList.length > 0 && (
-              <Button
-                onClick={() => setGenesList([])}
-                icon="trash"
-                className="vol-text-xs vol-rounded"
-              />
-              )}
+            <div className="vol-my-2.5 md:vol-ml-24 md:vol-mr-4 lg:vol-ml-4 lg:vol-mr-4 vol-h-[90px] vol-overflow-y-scroll vol-border-t lg:vol-border-b vol-pt-3 vol-pb-3">
+              {genesList.map((gene) => (
+                <Tag
+                  key={gene}
+                  onRemove={() => removeGeneFromList(gene)}
+                  className="vol-m-1 vol-text-sm vol-bg-primary-100"
+                >
+                  {gene}
+                </Tag>
+              ))}
             </div>
           </div>
-          <div className="vol-my-2.5 md:vol-ml-24 md:vol-mr-4 vol-min-h-[80px] vol-border-t vol-pt-3">
-            {genesList.map((gene) => (
-              <Tag
-                key={gene}
-                onRemove={() => removeGeneFromList(gene)}
-                className="vol-m-1 vol-text-sm vol-bg-primary-100"
-              >
-                {gene}
-              </Tag>
-            ))}
-          </div>
-        </div>
-        <div className="lg:vol-w-[40%] sm:vol-w-2/3 md:vol-w-1/2 vol-w-full vol-p-4 vol-mx-auto vol-mt-10">
-          <div className="vol-w-full vol-mb-4 vol-px-3">
-            <p className="vol-mb-2.5">padj Threshold</p>
-            <Slider
-              min={0.01}
-              max={0.09}
-              stepSize={0.01}
-              labelValues={[
-                0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
-              ]}
-              labelRenderer={(value) => {
-                return value === 0.01 || value === 0.05 ? (
-                  <strong>{value.toFixed(2)}</strong>
-                ) : (
-                  value.toFixed(2)
-                );
-              }}
-              onChange={(value) => setPadjThreshold(value)}
-              value={padjThreshold}
-              data-testid="padj-threshold"
-              className="custom-slider"
-            ></Slider>
-          </div>
+          <div className="sm:vol-w-2/3 md:vol-w-1/2 lg:vol-w-full md:vol-mr-10 lg:vol-mr-0 vol-w-full vol-p-4 vol-mx-auto md:vol-mt-10 lg:vol-mt-0">
+            <div className="vol-w-full vol-mb-4 vol-px-3">
+              <p className="vol-mb-2.5">padj Threshold</p>
+              <Slider
+                min={0.01}
+                max={0.09}
+                stepSize={0.01}
+                labelValues={[
+                  0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
+                ]}
+                labelRenderer={(value) => {
+                  return value === 0.01 || value === 0.05 ? (
+                    <strong>{value.toFixed(2)}</strong>
+                  ) : (
+                    value.toFixed(2)
+                  );
+                }}
+                onChange={(value) => setPadjThreshold(value)}
+                value={padjThreshold}
+                data-testid="padj-threshold"
+                className="custom-slider"
+              ></Slider>
+            </div>
 
-          <div className="vol-w-full vol-px-3">
-            <p className="vol-mb-2.5">Log2FC Threshold</p>
-            <Slider
-              min={0}
-              max={4}
-              stepSize={0.1}
-              labelStepSize={0.5}
-              onChange={(value) => setLog2FCThreshold(value)}
-              value={log2FCThreshold}
-              data-testid="log2fc-threshold"
-              className="custom-slider"
-            ></Slider>
+            <div className="vol-w-full vol-px-3">
+              <p className="vol-mb-2.5">Log2FC Threshold</p>
+              <Slider
+                min={0}
+                max={4}
+                stepSize={0.1}
+                labelStepSize={0.5}
+                onChange={(value) => setLog2FCThreshold(value)}
+                value={log2FCThreshold}
+                data-testid="log2fc-threshold"
+                className="custom-slider"
+              ></Slider>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
       {showChart && (
-        <div>
+        <div className="lg:vol-w-3/4 lg:vol-mt-2">
           <ChartRenderer
             upRegulatedGenes={upRegulatedGenes}
             downRegulatedGenes={downRegulatedGenes}
