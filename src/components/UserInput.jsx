@@ -191,9 +191,9 @@ function UserInput() {
     <div className="lg:vol-flex">
       <div className="vol-sidebar lg:vol-w-1/4 lg:vol-bg-gray-50 lg:vol-shadow-md lg:vol-min-h-screen">
         <form className="vol-flex vol-flex-col md:vol-flex-row lg:vol-flex-col lg:vol-justify-between">
-          <div className="md:vol-w-1/2 vol-p-4 vol-mt-10 lg:vol-w-full">
+          <div className="md:vol-w-1/2 vol-px-4 vol-pt-10 lg:vol-w-full">
             {/* add a file input to allow the user to upload a csv file */}
-            <div className="vol-grid md:vol-grid-cols-12 lg:vol-grid-cols-1 vol-grid-cols-1 vol-gap-4 vol-items-center vol-mb-5">
+            <div className="vol-grid md:vol-grid-cols-12 lg:vol-grid-cols-1 vol-grid-cols-1 vol-gap-2 vol-items-center vol-mb-5">
               {/* Upload Section */}
               <label
                 htmlFor="dataFile"
@@ -252,7 +252,7 @@ function UserInput() {
               {/* Gene Label Section */}
               <label
                 htmlFor="geneInput"
-                className="md:vol-text-right lg:vol-text-left vol-col-span-4"
+                className="md:vol-text-right lg:vol-text-left vol-col-span-4 vol-mt-2"
               >
                 Gene Label Selection
               </label>
